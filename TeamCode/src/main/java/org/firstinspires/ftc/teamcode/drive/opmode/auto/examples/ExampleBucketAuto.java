@@ -1,4 +1,4 @@
-package pedroPathing.examples;
+package org.firstinspires.ftc.teamcode.drive.opmode.auto.examples;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
@@ -10,10 +10,10 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import pedroPathing.constants.FConstants;
-import pedroPathing.constants.LConstants;
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 
 /**
  * This is an example auto that showcases movement and control of two servos autonomously.

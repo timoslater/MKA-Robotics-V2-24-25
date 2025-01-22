@@ -24,13 +24,15 @@ public class MotorController {
     }
 
     public void update() {
-        if (enabled) {
-            double power = pid.calculate(motor1.getCurrentPosition(), target);
-            motor1.setPower(power);
-            if (motor2 != null) {
-                motor2.setPower(power);
-            }
+        double power = pid.calculate(motor1.getCurrentPosition(), target);
+        motor1.setPower(power);
+        if (motor2 != null) {
+            motor2.setPower(power);
         }
+    }
+
+    public boolean isBusy() {
+        return Math.abs(target - motor1.getCurrentPosition()) > 50;
     }
 
     public void setTarget(int target) {
