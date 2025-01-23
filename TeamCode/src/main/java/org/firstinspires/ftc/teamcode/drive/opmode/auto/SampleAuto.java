@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
 @Autonomous(name = "Sample Auto (Left Side)", group = "Auto")
-public class SampleAuto extends OpMode {
+public class SampleAuto extends BaseAuto {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -255,8 +255,8 @@ public class SampleAuto extends OpMode {
         follower.setStartingPose(startPose);
         buildPaths();
 
-        mainArm = new BaseAuto.MainArm(hardwareMap);
-        sideArm = new BaseAuto.SideArm(hardwareMap);
+        mainArm = new MainArm(hardwareMap);
+        sideArm = new SideArm(hardwareMap);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/

@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
 @Autonomous(name = "Specimen Auto (Right Side)", group = "Auto")
-public class SpecimenAuto extends OpMode {
+public class SpecimenAuto extends BaseAuto {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -29,7 +29,7 @@ public class SpecimenAuto extends OpMode {
     private final Pose startPose = new Pose(11.800, 61.700, Math.toRadians(90));
 
     Path line1;
-    PathChain line2To3, line4To5, line6To9, line10To11, line12To14;
+    PathChain line2To3, line4To5, line6To9, line10To11, line12To14, line15To16;
 
 
     private BaseAuto.MainArm mainArm;
@@ -59,7 +59,7 @@ public class SpecimenAuto extends OpMode {
                         new BezierCurve(
                                 new Point(30.000, 61.700, Point.CARTESIAN),
                                 new Point(30.000, 30.000, Point.CARTESIAN),
-                                new Point(16.000, 35.000, Point.CARTESIAN)
+                                new Point(12.500, 35.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-90))
@@ -69,8 +69,8 @@ public class SpecimenAuto extends OpMode {
                 .addPath(
                         // Line 4
                         new BezierCurve(
-                                new Point(16.000, 35.000, Point.CARTESIAN),
-                                new Point(30.000, 30.000, Point.CARTESIAN),
+                                new Point(12.500, 35.000, Point.CARTESIAN),
+                                new Point(30.000, 35.000, Point.CARTESIAN),
                                 new Point(30.000, 61.700, Point.CARTESIAN)
                         )
                 )
@@ -115,7 +115,7 @@ public class SpecimenAuto extends OpMode {
                         // Line 9
                         new BezierLine(
                                 new Point(70.000, 25.000, Point.CARTESIAN),
-                                new Point(16.000, 25.000, Point.CARTESIAN)
+                                new Point(12.500, 25.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
@@ -125,7 +125,7 @@ public class SpecimenAuto extends OpMode {
                 .addPath(
                         // Line 10
                         new BezierLine(
-                                new Point(16.000, 25.000, Point.CARTESIAN),
+                                new Point(12.500, 25.000, Point.CARTESIAN),
                                 new Point(30.000, 25.000, Point.CARTESIAN)
                         )
                 )
@@ -134,7 +134,7 @@ public class SpecimenAuto extends OpMode {
                         // Line 11
                         new BezierLine(
                                 new Point(30.000, 25.000, Point.CARTESIAN),
-                                new Point(16.000, 25.000, Point.CARTESIAN)
+                                new Point(12.500, 25.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
@@ -144,7 +144,7 @@ public class SpecimenAuto extends OpMode {
                 .addPath(
                         // Line 12
                         new BezierCurve(
-                                new Point(16.000, 25.000, Point.CARTESIAN),
+                                new Point(12.500, 25.000, Point.CARTESIAN),
                                 new Point(30.000, 25.000, Point.CARTESIAN),
                                 new Point(30.000, 40.000, Point.CARTESIAN)
                         )
@@ -167,6 +167,26 @@ public class SpecimenAuto extends OpMode {
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
+
+        line15To16 = follower.pathBuilder()
+                .addPath(
+                        // Line 15
+                        new BezierCurve(
+                                new Point(38.000, 61.700, Point.CARTESIAN),
+                                new Point(17.000, 60.000, Point.CARTESIAN),
+                                new Point(17.500, 25.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .addPath(
+                        // Line 16
+                        new BezierLine(
+                                new Point(17.000, 25.000, Point.CARTESIAN),
+                                new Point(17.000, 25.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .build();
     }
 
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
@@ -175,42 +195,103 @@ public class SpecimenAuto extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                sideArm.moveLiftTo(2400);
                 follower.followPath(line1,true);
                 setPathState(1);
                 break;
 
             case 1:
-                if (!follower.isBusy()) {
-                    follower.followPath(line2To3);
+                if (!sideArm.isBusy()) {
+                    sideArm.moveLiftTo(1400);
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if (!follower.isBusy()) {
-                    follower.followPath(line4To5);
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
                     setPathState(3);
                 }
                 break;
+
             case 3:
-                if (!follower.isBusy()) {
-                    follower.followPath(line6To9);
+                if (!follower.isBusy() && !sideArm.isBusy()) {
+                    follower.followPath(line2To3, true);
                     setPathState(4);
                 }
                 break;
+
             case 4:
                 if (!follower.isBusy()) {
-                    follower.followPath(line10To11);
+                    sideArm.closeClaw();
                     setPathState(5);
                 }
                 break;
+
             case 5:
-                if (!follower.isBusy()) {
-                    follower.followPath(line12To14);
+                if (!follower.isBusy() && !sideArm.isBusy()) {
+                    sideArm.moveLiftTo(2400);
+                    follower.followPath(line4To5);
                     setPathState(6);
                 }
                 break;
+
             case 6:
+                if (!follower.isBusy() && !sideArm.isBusy()) {
+                    sideArm.moveLiftTo(1400);
+                    setPathState(7);
+                }
+                break;
+
+            case 7:
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
+                    setPathState(8);
+                }
+                break;
+
+            case 8:
+                if (!follower.isBusy()) {
+                    follower.followPath(line6To9);
+                    setPathState(9);
+                }
+                break;
+
+            case 9:
+                if (!follower.isBusy()) {
+                    sideArm.closeClaw();
+                    follower.followPath(line10To11);
+                    setPathState(10);
+                }
+                break;
+
+            case 10:
+                if (!follower.isBusy()) {
+                    sideArm.moveLiftTo(2400);
+                    follower.followPath(line12To14);
+                    setPathState(11);
+                }
+                break;
+
+            case 11:
+                if (!follower.isBusy() && !sideArm.isBusy()) {
+                    sideArm.moveLiftTo(1400);
+                    setPathState(12);
+                }
+                break;
+
+            case 12:
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
+                    follower.followPath(line15To16);
+                    setPathState(13);
+                }
+                break;
+
+            case 13:
                 if (!follower.isBusy()) {
                     requestOpModeStop();
                 }
@@ -236,6 +317,7 @@ public class SpecimenAuto extends OpMode {
         autonomousPathUpdate();
 
         // Feedback to Driver Hub
+        telemetry.addData("servoTimer delta", sideArm.getServoTimeDelta());
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
@@ -255,8 +337,10 @@ public class SpecimenAuto extends OpMode {
         follower.setStartingPose(startPose);
         buildPaths();
 
-        mainArm = new BaseAuto.MainArm(hardwareMap);
-        sideArm = new BaseAuto.SideArm(hardwareMap);
+        mainArm = new MainArm(hardwareMap);
+        sideArm = new SideArm(hardwareMap);
+
+        sideArm.closeClaw();
     }
 
     /** This method is called continuously after Init while waiting for "play". **/

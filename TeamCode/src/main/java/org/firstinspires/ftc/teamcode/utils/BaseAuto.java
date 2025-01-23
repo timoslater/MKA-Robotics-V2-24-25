@@ -1,20 +1,24 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.MotorController;
 import org.firstinspires.ftc.teamcode.utils.PIDController;
 
-public class BaseAuto {
-    public static class MainArm {
+public abstract class BaseAuto extends OpMode {
+    public class MainArm {
         private DcMotorEx lift1, lift2;
         private MotorController liftController;
         private DcMotorEx slide;
@@ -63,27 +67,43 @@ public class BaseAuto {
         }
     }
 
-    public static class SideArm {
+    public class SideArm {
         private DcMotorEx lift;
         private MotorController liftController;
         private Servo grabber;
 
+        private ElapsedTime servoTimer;
+        private boolean isServoBusy = false;
+        private double lastServoStartTime = 0;
+
         public SideArm(HardwareMap hardwareMap) {
             lift = hardwareMap.get(DcMotorEx.class, "specimen");
-            lift.setDirection(DcMotor.Direction.FORWARD);
+            lift.setDirection(DcMotor.Direction.REVERSE);
             lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             liftController = new MotorController(lift, 0.01, 0, 0.0001, 0, 537.7,0);
 
             grabber = hardwareMap.get(Servo.class, "clawSpecimen");
+
+            servoTimer = new ElapsedTime();
+        }
+
+        private void setServoStartTime() {
+            lastServoStartTime = servoTimer.seconds();
+        }
+
+        public double getServoTimeDelta() {
+            return servoTimer.seconds() - lastServoStartTime;
         }
 
         public void openClaw() {
+            setServoStartTime();
             grabber.setPosition(0.3);
         }
 
         public void closeClaw() {
+            setServoStartTime();
             grabber.setPosition(0.64);
         }
 
@@ -93,7 +113,7 @@ public class BaseAuto {
         }
 
         public boolean isBusy() {
-            return liftController.isBusy();
+            return liftController.isBusy() || (servoTimer.seconds() - lastServoStartTime < 1);
         }
 
         public void update() {
