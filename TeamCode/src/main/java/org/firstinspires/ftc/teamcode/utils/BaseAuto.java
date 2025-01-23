@@ -38,7 +38,7 @@ public class BaseAuto {
             slide.setDirection(DcMotor.Direction.REVERSE);
             slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            slideController = new MotorController(slide, 0.009, 0, 0.0001, 0.05, 384.5 , 0);
+            slideController = new MotorController(slide, 0.003, 0, 0.00001, 0, 751.8 , 0);
 
 
         }
@@ -74,7 +74,7 @@ public class BaseAuto {
             lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            liftController = new MotorController(lift, 0.009, 0, 0.0001, 0.05, 384.5,0);
+            liftController = new MotorController(lift, 0.01, 0, 0.0001, 0, 537.7,0);
 
             grabber = hardwareMap.get(Servo.class, "clawSpecimen");
         }
