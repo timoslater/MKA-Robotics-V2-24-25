@@ -204,7 +204,7 @@ public class TeleOp2024 extends LinearOpMode {
 
         driveGamepad = gamepad1;
 
-        liftController = new MotorController(lift1, lift2, 0.009, 0, 0.0001, 0.05, lastPos);
+        liftController = new MotorController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, lastPos);
 
 
         waitForStart();

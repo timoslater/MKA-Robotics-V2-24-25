@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.utils;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class MotorController {
-    private PIDController pid;
+    private PIDController pid = new PIDController(0, 0,0);
     private double p = 0, i = 0, d = 0;
     private double ff = 0;
     private int target = 0;
@@ -11,16 +11,12 @@ public class MotorController {
     public DcMotor motor1, motor2;
     public boolean enabled = true;
 
-    public MotorController(DcMotor motor1, DcMotor motor2, double p, double i, double d, double f, int target) {
-        this.pid = new PIDController(p, i, d);
-        this.ff = Math.cos(Math.toRadians(target/ticks)) * f;
-        this.motor1 = motor1;
-        this.motor2 = motor2;
-        this.target = target;
+    public MotorController(DcMotor motor1, DcMotor motor2, double p, double i, double d, double f, double ticks, int target) {
+        setValues(motor1, motor2, p, i, d, f, ticks, target);
     }
 
-    public MotorController(DcMotor motor1, double p, double i, double d, double f, int target) {
-        this(motor1, null, p, i, d, f, target);
+    public MotorController(DcMotor motor1, double p, double i, double d, double f, double ticks, int target) {
+        this(motor1, null, p, i, d, f, ticks, target);
     }
 
     public void update() {
@@ -36,6 +32,14 @@ public class MotorController {
     }
 
     public void setTarget(int target) {
+        this.target = target;
+    }
+
+    public void setValues(DcMotor motor1, DcMotor motor2, double p, double i, double d, double f, double ticks, int target) {
+        this.pid.setPID(p, i, d);
+        this.ff = Math.cos(Math.toRadians(target/ticks)) * f;
+        this.motor1 = motor1;
+        this.motor2 = motor2;
         this.target = target;
     }
 }
