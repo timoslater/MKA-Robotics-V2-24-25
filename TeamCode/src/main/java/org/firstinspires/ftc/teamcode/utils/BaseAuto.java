@@ -22,26 +22,18 @@ public abstract class BaseAuto extends OpMode {
 
     public class WaitTimer {
         private ElapsedTime timer;
-        private double startTime;
         private double endTime;
-        private boolean isActive;
 
         public WaitTimer() {
             timer = new ElapsedTime();
         }
 
         public void startTimer(double waitTime) {
-            isActive = true;
-            startTime = timer.seconds();
-            endTime = startTime + waitTime;
+            endTime = timer.seconds() + waitTime;
         }
 
         public boolean isDone() {
-            if(timer.seconds() > endTime) {
-                isActive = false;
-                return true;
-            }
-            return false;
+            return timer.seconds() > endTime;
         }
 
     }
@@ -140,7 +132,7 @@ public abstract class BaseAuto extends OpMode {
         }
 
         public boolean isBusy() {
-            return liftController.isBusy() || (servoTimer.seconds() - lastServoStartTime < 1);
+            return liftController.isBusy() || (servoTimer.seconds() - lastServoStartTime < 0.5);
         }
 
         public void update() {
