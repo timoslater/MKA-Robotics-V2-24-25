@@ -88,10 +88,10 @@ public class TeleOp2024 extends LinearOpMode {
     public void slideDown() { slide.setPower(-1); }
 
     public void specimenUp(){
-        specimen.setPower(-0.75);
+        specimen.setPower(0.75);
     }
     public void specimenDown(){
-        specimen.setPower(0.75);
+        specimen.setPower(-0.75);
     }
 
     public void clawOpen() {
@@ -104,7 +104,7 @@ public class TeleOp2024 extends LinearOpMode {
     }
 
     public void clawClose() {
-        claw.setPosition(.64);
+        claw.setPosition(.66);
         if (!isDropping) {
             elbow.setPosition(0.38);
             hand.setPosition(0.5);
@@ -234,7 +234,10 @@ public class TeleOp2024 extends LinearOpMode {
                 liftUp(armGamepad.left_trigger * 0.75);
                 lastPos = lift1.getCurrentPosition();
             } else if (armGamepad.right_trigger > 0) { //&& (lift1.getCurrentPosition() > 230 || resetting)) {
-                if (lift1.getCurrentPosition() < 400) {
+                if (lift1.getCurrentPosition() < 60) {
+                    liftController.setTarget(60);
+                    liftController.update();
+                } else if (lift1.getCurrentPosition() < 400) {
                     liftDown(armGamepad.right_trigger * 0.75 * Math.max(Math.pow(minLiftPower, Math.abs(lift1.getCurrentPosition() - 0)), minLiftPower));
                     // f(x) = (total power) * (min power)^(right_trigger)
                 } else {
@@ -244,14 +247,6 @@ public class TeleOp2024 extends LinearOpMode {
             } else {
                 liftController.setTarget(lastPos);
                 liftController.update();
-            }
-
-            if (armGamepad.dpad_up) {
-                armPositionDrop();
-            }
-
-            if (armGamepad.dpad_down) {
-                armPositionIdle();
             }
 
             if (armGamepad.right_bumper && (slide.getCurrentPosition() > -2670  || resetting)) {
@@ -284,9 +279,9 @@ public class TeleOp2024 extends LinearOpMode {
                 rotateClawL();
             }
 
-            if(armGamepad.right_stick_button){
+            if(armGamepad.dpad_up){
                 specimenUp();
-            } else if(armGamepad.left_stick_button){
+            } else if(armGamepad.dpad_down){
                 specimenDown();
             } else{
                 specimen.setPower(0);
