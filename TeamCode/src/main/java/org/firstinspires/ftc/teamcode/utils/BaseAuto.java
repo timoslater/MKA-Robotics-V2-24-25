@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.ams.AMSColorSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,6 +19,32 @@ import org.firstinspires.ftc.teamcode.utils.MotorController;
 import org.firstinspires.ftc.teamcode.utils.PIDController;
 
 public abstract class BaseAuto extends OpMode {
+
+    public class WaitTimer {
+        private ElapsedTime timer;
+        private double startTime;
+        private double endTime;
+        private boolean isActive;
+
+        public WaitTimer() {
+            timer = new ElapsedTime();
+        }
+
+        public void startTimer(double waitTime) {
+            isActive = true;
+            startTime = timer.seconds();
+            endTime = startTime + waitTime;
+        }
+
+        public boolean isDone() {
+            if(timer.seconds() > endTime) {
+                isActive = false;
+                return true;
+            }
+            return false;
+        }
+
+    }
     public class MainArm {
         private DcMotorEx lift1, lift2;
         private MotorController liftController;
@@ -82,7 +109,7 @@ public abstract class BaseAuto extends OpMode {
             lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            liftController = new MotorController(lift, 0.01, 0, 0.0001, 0, 537.7,0);
+            liftController = new MotorController(lift, 0.02, 0, 0.0001, 0, 537.7,0);
 
             grabber = hardwareMap.get(Servo.class, "clawSpecimen");
 
@@ -104,7 +131,7 @@ public abstract class BaseAuto extends OpMode {
 
         public void closeClaw() {
             setServoStartTime();
-            grabber.setPosition(0.64);
+            grabber.setPosition(0.66);
         }
 
         public void moveLiftTo(int targetPos) {

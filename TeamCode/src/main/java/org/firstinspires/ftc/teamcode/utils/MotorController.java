@@ -28,7 +28,7 @@ public class MotorController {
     }
 
     public boolean isBusy() {
-        return Math.abs(target - motor1.getCurrentPosition()) > 50;
+        return Math.abs(target - motor1.getCurrentPosition()) > 20;
     }
 
     public void setTarget(int target) {

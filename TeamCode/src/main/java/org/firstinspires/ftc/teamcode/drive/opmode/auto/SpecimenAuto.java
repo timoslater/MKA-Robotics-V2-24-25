@@ -11,6 +11,7 @@ import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
@@ -21,6 +22,7 @@ public class SpecimenAuto extends BaseAuto {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
+    private WaitTimer waitTimer;
 
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
@@ -28,165 +30,207 @@ public class SpecimenAuto extends BaseAuto {
 
     private final Pose startPose = new Pose(11.800, 61.700, Math.toRadians(90));
 
-    Path line1;
-    PathChain line2To3, line4To5, line6To9, line10To11, line12To14, line15To16;
+    PathChain prePath, line1, line2To6, line7, line8To9, line10, line11To12, line13, line14To15, line16, line17To18;
+
+    PathChain submersiblePointTest, wallPointTest;
 
 
-    private BaseAuto.MainArm mainArm;
-    private BaseAuto.SideArm sideArm;
+    private MainArm mainArm;
+    private SideArm sideArm;
 
     public void buildPaths() {
-        line1 = new Path(
+        prePath = follower.pathBuilder()
+                .addPath(
                         // Line 1
                         new BezierLine(
                                 new Point(11.800, 61.700, Point.CARTESIAN),
-                                new Point(38.000, 61.700, Point.CARTESIAN)
+                                new Point(30.000, 61.700, Point.CARTESIAN)
                         )
-                );
-        line1.setConstantHeadingInterpolation(Math.toRadians(90));
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .build();
 
-        line2To3 = follower.pathBuilder()
+
+        line1 = follower.pathBuilder()
                 .addPath(
-                     // Line 2
-                    new BezierLine(
-                            new Point(38.000, 61.700, Point.CARTESIAN),
-                            new Point(30.000, 61.700, Point.CARTESIAN)
-                    )
+                        // Line 1
+                        new BezierLine(
+                                new Point(11.800, 61.700, Point.CARTESIAN),
+                                new Point(41.200, 58.200, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .build();
+
+        line2To6 = follower.pathBuilder()
+                .addPath(
+                        // Line 2
+                        new BezierLine(
+                                new Point(41.200, 58.200, Point.CARTESIAN),
+                                new Point(30.000, 61.700, Point.CARTESIAN)
+                        )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .addPath(
                         // Line 3
-                        new BezierCurve(
+                        new BezierLine(
                                 new Point(30.000, 61.700, Point.CARTESIAN),
-                                new Point(30.000, 30.000, Point.CARTESIAN),
-                                new Point(12.500, 35.000, Point.CARTESIAN)
+                                new Point(30.000, 38.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-90))
-                .build();
-
-        line4To5 = follower.pathBuilder()
                 .addPath(
                         // Line 4
                         new BezierCurve(
-                                new Point(12.500, 35.000, Point.CARTESIAN),
-                                new Point(30.000, 35.000, Point.CARTESIAN),
-                                new Point(30.000, 61.700, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(90))
-                .addPath(
-                        // Line 5
-                        new BezierLine(
-                                new Point(30.000, 61.700, Point.CARTESIAN),
-                                new Point(38.000, 61.700, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(90))
-                .build();
-
-        line6To9 = follower.pathBuilder()
-                .addPath(
-                        // Line 6
-                        new BezierLine(
-                                new Point(38.000, 61.700, Point.CARTESIAN),
-                                new Point(30.000, 61.700, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(90))
-                .addPath(
-                        // Line 7
-                        new BezierLine(
-                                new Point(30.000, 61.700, Point.CARTESIAN),
-                                new Point(30.000, 35.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-90))
-                .addPath(
-                        // Line 8
-                        new BezierCurve(
-                                new Point(30.000, 35.000, Point.CARTESIAN),
+                                new Point(30.000, 38.000, Point.CARTESIAN),
                                 new Point(70.000, 35.000, Point.CARTESIAN),
                                 new Point(70.000, 25.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
-                        // Line 9
+                        // Line 5
                         new BezierLine(
                                 new Point(70.000, 25.000, Point.CARTESIAN),
-                                new Point(12.500, 25.000, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
-                .build();
-
-        line10To11 = follower.pathBuilder()
-                .addPath(
-                        // Line 10
-                        new BezierLine(
-                                new Point(12.500, 25.000, Point.CARTESIAN),
-                                new Point(30.000, 25.000, Point.CARTESIAN)
+                                new Point(16.000, 15.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
-                        // Line 11
-                        new BezierLine(
-                                new Point(30.000, 25.000, Point.CARTESIAN),
-                                new Point(12.500, 25.000, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(-90))
-                .build();
-
-        line12To14 = follower.pathBuilder()
-                .addPath(
-                        // Line 12
+                        // Line 6
                         new BezierCurve(
-                                new Point(12.500, 25.000, Point.CARTESIAN),
-                                new Point(30.000, 25.000, Point.CARTESIAN),
-                                new Point(30.000, 40.000, Point.CARTESIAN)
+                                new Point(16.000, 15.000, Point.CARTESIAN),
+                                new Point(75.000, 24.000, Point.CARTESIAN),
+                                new Point(18.500, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .build();
+
+        line7 = follower.pathBuilder()
+                .addPath(
+                        // Line 7
+                        new BezierLine(
+                                new Point(18.500, 30.000, Point.CARTESIAN),
+                                new Point(12.500, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .build();
+
+        line8To9 = follower.pathBuilder()
+                .addPath(
+                        // Line 8
+                        new BezierLine(
+                                new Point(12.500, 30.000, Point.CARTESIAN),
+                                new Point(18.500, 30.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
-                        // Line 13
-                        new BezierLine(
-                                new Point(30.000, 40.000, Point.CARTESIAN),
+                        // Line 9
+                        new BezierCurve(
+                                new Point(18.500, 30.000, Point.CARTESIAN),
+                                new Point(30.000, 30.000, Point.CARTESIAN),
                                 new Point(30.000, 61.700, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(90))
+                .build();
+
+        line10 = follower.pathBuilder()
                 .addPath(
-                        // Line 14
+                        // Line 10
                         new BezierLine(
                                 new Point(30.000, 61.700, Point.CARTESIAN),
-                                new Point(38.000, 61.700, Point.CARTESIAN)
+                                new Point(39.500, 61.700, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
 
-        line15To16 = follower.pathBuilder()
+        line11To12 = follower.pathBuilder()
                 .addPath(
-                        // Line 15
-                        new BezierCurve(
-                                new Point(38.000, 61.700, Point.CARTESIAN),
-                                new Point(17.000, 60.000, Point.CARTESIAN),
-                                new Point(17.500, 25.000, Point.CARTESIAN)
+                        // Line 11
+                        new BezierLine(
+                                new Point(39.500, 61.700, Point.CARTESIAN),
+                                new Point(30.000, 61.700, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
                 .addPath(
-                        // Line 16
+                        // Line 12
+                        new BezierCurve(
+                                new Point(30.000, 61.700, Point.CARTESIAN),
+                                new Point(30.000, 30.000, Point.CARTESIAN),
+                                new Point(18.500, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(-90))
+                .build();
+
+        line13 = follower.pathBuilder()
+                .addPath(
+                        // Line 13
                         new BezierLine(
-                                new Point(17.000, 25.000, Point.CARTESIAN),
-                                new Point(17.000, 25.000, Point.CARTESIAN)
+                                new Point(18.500, 30.000, Point.CARTESIAN),
+                                new Point(12.500, 30.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .build();
+
+        line14To15 = follower.pathBuilder()
+                .addPath(
+                        // Line 14
+                        new BezierLine(
+                                new Point(12.500, 30.000, Point.CARTESIAN),
+                                new Point(18.500, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .addPath(
+                        // Line 15
+                        new BezierCurve(
+                                new Point(18.500, 30.000, Point.CARTESIAN),
+                                new Point(30.000, 30.000, Point.CARTESIAN),
+                                new Point(30.000, 61.700, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(-90), Math.toRadians(90))
+                .build();
+
+        line16 = follower.pathBuilder()
+                .addPath(
+                        // Line 16
+                        new BezierLine(
+                                new Point(30.000, 61.700, Point.CARTESIAN),
+                                new Point(39.500, 61.700, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .build();
+
+        line17To18 = follower.pathBuilder()
+                .addPath(
+                        // Line 17
+                        new BezierLine(
+                                new Point(39.500, 61.700, Point.CARTESIAN),
+                                new Point(30.000, 61.700, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .addPath(
+                        // Line 18
+                        new BezierLine(
+                                new Point(30.000, 61.700, Point.CARTESIAN),
+                                new Point(12.500, 30.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(90))
+                .build();
+
+
     }
 
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
@@ -196,106 +240,55 @@ public class SpecimenAuto extends BaseAuto {
         switch (pathState) {
             case 0:
                 sideArm.moveLiftTo(2400);
-                follower.followPath(line1,true);
+                follower.followPath(prePath,true);
                 setPathState(1);
                 break;
 
             case 1:
-                if (!sideArm.isBusy()) {
-                    sideArm.moveLiftTo(1400);
+                if (!follower.isBusy() && !sideArm.isBusy()) {
+                    follower.followPath(line1);
                     setPathState(2);
                 }
                 break;
 
             case 2:
-                if (!sideArm.isBusy()) {
-                    sideArm.openClaw();
-                    sideArm.moveLiftTo(0);
+                if (!follower.isBusy()) {
+                    sideArm.moveLiftTo(1525);
                     setPathState(3);
                 }
                 break;
 
             case 3:
-                if (!follower.isBusy() && !sideArm.isBusy()) {
-                    follower.followPath(line2To3, true);
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
                     setPathState(4);
                 }
                 break;
 
+
             case 4:
-                if (!follower.isBusy()) {
-                    sideArm.closeClaw();
+                if (!sideArm.isBusy()) {
+                    follower.followPath(line2To6);
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy() && !sideArm.isBusy()) {
-                    sideArm.moveLiftTo(2400);
-                    follower.followPath(line4To5);
+                if (!follower.isBusy()) {
+                    waitTimer.startTimer(3.0);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (!follower.isBusy() && !sideArm.isBusy()) {
-                    sideArm.moveLiftTo(1400);
-                    setPathState(7);
+                if (waitTimer.isDone()) {
+                    follower.followPath(line7, true);
+                    setPathState(-1);
                 }
                 break;
 
-            case 7:
-                if (!sideArm.isBusy()) {
-                    sideArm.openClaw();
-                    sideArm.moveLiftTo(0);
-                    setPathState(8);
-                }
-                break;
 
-            case 8:
-                if (!follower.isBusy()) {
-                    follower.followPath(line6To9);
-                    setPathState(9);
-                }
-                break;
-
-            case 9:
-                if (!follower.isBusy()) {
-                    sideArm.closeClaw();
-                    follower.followPath(line10To11);
-                    setPathState(10);
-                }
-                break;
-
-            case 10:
-                if (!follower.isBusy()) {
-                    sideArm.moveLiftTo(2400);
-                    follower.followPath(line12To14);
-                    setPathState(11);
-                }
-                break;
-
-            case 11:
-                if (!follower.isBusy() && !sideArm.isBusy()) {
-                    sideArm.moveLiftTo(1400);
-                    setPathState(12);
-                }
-                break;
-
-            case 12:
-                if (!sideArm.isBusy()) {
-                    sideArm.openClaw();
-                    sideArm.moveLiftTo(0);
-                    follower.followPath(line15To16);
-                    setPathState(13);
-                }
-                break;
-
-            case 13:
-                if (!follower.isBusy()) {
-                    requestOpModeStop();
-                }
-                break;
         }
     }
 
@@ -331,6 +324,10 @@ public class SpecimenAuto extends BaseAuto {
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
+
+        waitTimer = new WaitTimer();
+
+
 
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
