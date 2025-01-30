@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(group = "drive")
+//@TeleOp(group = "drive")
 public class EncoderTest extends LinearOpMode {
     private ArrayList<DcMotor> motors;
 

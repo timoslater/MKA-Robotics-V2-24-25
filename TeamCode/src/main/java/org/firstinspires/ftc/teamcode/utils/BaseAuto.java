@@ -101,7 +101,7 @@ public abstract class BaseAuto extends OpMode {
             lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            liftController = new MotorController(lift, 0.02, 0, 0.0001, 0, 537.7,0);
+            liftController = new MotorController(lift, 0.01, 0, 0.0001, 0, 537.7,0);
 
             grabber = hardwareMap.get(Servo.class, "clawSpecimen");
 

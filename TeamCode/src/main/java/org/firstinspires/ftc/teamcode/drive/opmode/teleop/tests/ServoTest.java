@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(group = "drive")
+//@TeleOp(group = "drive")
 public class ServoTest extends LinearOpMode {
     private ServoImplEx test = null;
     private boolean running = false;

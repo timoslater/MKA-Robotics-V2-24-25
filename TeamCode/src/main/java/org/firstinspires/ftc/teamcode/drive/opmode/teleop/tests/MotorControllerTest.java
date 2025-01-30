@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.utils.MotorController;
 
-@Config
-@TeleOp(name = "Motor Controller Test", group = "Linear Opmode")
+//@Config
+//@TeleOp(name = "Motor Controller Test", group = "Linear Opmode")
 public class MotorControllerTest extends LinearOpMode {
     public static double p = 0, i = 0, d = 0, f = 0;
 

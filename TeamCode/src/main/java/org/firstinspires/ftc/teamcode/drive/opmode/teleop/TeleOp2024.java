@@ -249,7 +249,7 @@ public class TeleOp2024 extends LinearOpMode {
                 liftController.update();
             }
 
-            if (armGamepad.right_bumper && (slide.getCurrentPosition() > -2670  || resetting)) {
+            if (armGamepad.right_bumper) {
                 slideUp();
             } else if (armGamepad.left_bumper) {
                 slideDown();

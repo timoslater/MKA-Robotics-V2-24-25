@@ -46,8 +46,8 @@ import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/13/2024
  */
-@Config
-@Autonomous(name = "Forward Velocity Tuner", group = "Automatic Tuners")
+//@Config
+//@Autonomous(name = "Forward Velocity Tuner", group = "Automatic Tuners")
 public class ForwardVelocityTuner extends OpMode {
     private ArrayList<Double> velocities = new ArrayList<>();
 

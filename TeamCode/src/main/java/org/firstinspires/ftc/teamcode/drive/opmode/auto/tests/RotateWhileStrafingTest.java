@@ -1,63 +1,56 @@
-package org.firstinspires.ftc.teamcode.drive.opmode.auto;
+package org.firstinspires.ftc.teamcode.drive.opmode.auto.tests;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
-@Autonomous(name = "Sample Auto (Left Side)", group = "Auto")
-public class SampleAuto extends BaseAuto {
+//@Autonomous(name = "Rotate While Strafing Test", group = "Auto")
+public class RotateWhileStrafingTest extends BaseAuto {
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
+    private WaitTimer waitTimer;
 
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
     private int pathState;
 
-    private final Pose startPose = new Pose(11.800, 85.700, Math.toRadians(180));
+    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
-    PathChain line1, line2;
-
-
-
-    private BaseAuto.MainArm mainArm;
-    private BaseAuto.SideArm sideArm;
+    PathChain path1, path2;
 
     public void buildPaths() {
-
-        line1 = follower.pathBuilder()
-            .addPath(
-                    // Line 1
-                    new BezierLine(
-                            new Point(11.800, 85.700, Point.CARTESIAN),
-                            new Point(16.000, 126.000, Point.CARTESIAN)
-                    )
-            )
-            .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(135))
-            .build();
-
-        line2 = follower.pathBuilder()
+        path1 = follower.pathBuilder()
                 .addPath(
-                        // Line 2
-                        new BezierCurve(
-                                new Point(16.000, 126.000, Point.CARTESIAN),
-                                new Point(50.000, 90.000, Point.CARTESIAN),
-                                new Point(63.000, 120.000, Point.CARTESIAN)
+                        // Line 1
+                        new BezierLine(
+                                new Point(0.000, 0.000, Point.CARTESIAN),
+                                new Point(30.000, 0.000, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-180))
+                .build();
+
+
+        path2 = follower.pathBuilder()
+                .addPath(
+                        // Line 2
+                        new BezierLine(
+                                new Point(30.000, 0.000, Point.CARTESIAN),
+                                new Point(0.000, 0.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
                 .build();
 
     }
@@ -68,19 +61,22 @@ public class SampleAuto extends BaseAuto {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                follower.followPath(line1,true);
-                setPathState(1);
+                if (!follower.isBusy()) {
+                    follower.followPath(path1);
+                    setPathState(1);
+                }
                 break;
 
             case 1:
                 if (!follower.isBusy()) {
-                    follower.followPath(line2, true);
-                    setPathState(-1);
+                    follower.followPath(path2);
+                    setPathState(0);
                 }
                 break;
 
+
             default:
-                if (!follower.isBusy() && !sideArm.isBusy()) {
+                if (!follower.isBusy()) {
                     requestOpModeStop();
                 }
                 break;
@@ -100,11 +96,10 @@ public class SampleAuto extends BaseAuto {
 
         // These loop the movements of the robot
         follower.update();
-        mainArm.update();
-        sideArm.update();
         autonomousPathUpdate();
 
         // Feedback to Driver Hub
+        telemetry.addData("line number", follower.getCurrentPath());
         telemetry.addData("path state", pathState);
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
@@ -119,13 +114,15 @@ public class SampleAuto extends BaseAuto {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
+        waitTimer = new WaitTimer();
+
+
+
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
 
-        mainArm = new MainArm(hardwareMap);
-        sideArm = new SideArm(hardwareMap);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/

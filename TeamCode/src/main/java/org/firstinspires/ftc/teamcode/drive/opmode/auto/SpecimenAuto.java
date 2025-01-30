@@ -90,8 +90,9 @@ public class SpecimenAuto extends BaseAuto {
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
                 .addPath(
                         // Line 5
-                        new BezierLine(
+                        new BezierCurve(
                                 new Point(70.000, 25.000, Point.CARTESIAN),
+                                new Point(28.000, 23.000, Point.CARTESIAN),
                                 new Point(26.000, 17.000, Point.CARTESIAN)
                         )
                 )
@@ -112,7 +113,7 @@ public class SpecimenAuto extends BaseAuto {
                         // Line 7
                         new BezierLine(
                                 new Point(18.500, 30.000, Point.CARTESIAN),
-                                new Point(11.800, 30.000, Point.CARTESIAN)
+                                new Point(12.000, 30.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
@@ -122,7 +123,7 @@ public class SpecimenAuto extends BaseAuto {
                 .addPath(
                         // Line 8
                         new BezierLine(
-                                new Point(11.800, 30.000, Point.CARTESIAN),
+                                new Point(12.000, 30.000, Point.CARTESIAN),
                                 new Point(18.500, 30.000, Point.CARTESIAN)
                         )
                 )
@@ -174,17 +175,18 @@ public class SpecimenAuto extends BaseAuto {
                         // Line 13
                         new BezierLine(
                                 new Point(18.500, 30.000, Point.CARTESIAN),
-                                new Point(11.800, 30.000, Point.CARTESIAN)
+                                new Point(12.000, 30.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(-90))
+                .setPathEndTimeoutConstraint(2.0)
                 .build();
 
         line14To15 = follower.pathBuilder()
                 .addPath(
                         // Line 14
                         new BezierLine(
-                                new Point(11.800, 30.000, Point.CARTESIAN),
+                                new Point(12.000, 30.000, Point.CARTESIAN),
                                 new Point(18.500, 30.000, Point.CARTESIAN)
                         )
                 )
@@ -224,7 +226,7 @@ public class SpecimenAuto extends BaseAuto {
                         // Line 18
                         new BezierLine(
                                 new Point(30.000, 61.700, Point.CARTESIAN),
-                                new Point(12.500, 30.000, Point.CARTESIAN)
+                                new Point(20.000, 30.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(90))
@@ -240,20 +242,20 @@ public class SpecimenAuto extends BaseAuto {
         switch (pathState) {
             case 0:
                 sideArm.moveLiftTo(2400);
-                follower.followPath(prePath,true);
+                follower.followPath(prePath);
                 setPathState(1);
                 break;
 
             case 1:
                 if (!follower.isBusy() && !sideArm.isBusy()) {
-                    follower.followPath(line1);
+                    follower.followPath(line1, true);
                     setPathState(2);
                 }
                 break;
 
             case 2:
                 if (!follower.isBusy()) {
-                    sideArm.moveLiftTo(1525);
+                    sideArm.moveLiftTo(1615);
                     setPathState(3);
                 }
                 break;
@@ -262,139 +264,121 @@ public class SpecimenAuto extends BaseAuto {
                 if (!sideArm.isBusy()) {
                     sideArm.openClaw();
                     sideArm.moveLiftTo(0);
+                    follower.followPath(line2To6, true);
                     setPathState(4);
                 }
                 break;
 
-
             case 4:
-                if (!sideArm.isBusy()) {
-                    follower.followPath(line2To6, true);
+                if (!follower.isBusy()) {
+                    waitTimer.startTimer(1.5);
                     setPathState(5);
                 }
                 break;
 
             case 5:
-                if (!follower.isBusy()) {
-                    waitTimer.startTimer(1);
+                if (waitTimer.isDone()) {
+                    follower.setMaxPower(0.4);
+                    follower.followPath(line7, true);
                     setPathState(6);
                 }
                 break;
 
             case 6:
-                if (waitTimer.isDone()) {
-                    follower.setMaxPower(0.5);
-                    follower.followPath(line7, true);
+                if (!follower.isBusy()) {
+                    follower.setMaxPower(1.0);
+                    sideArm.closeClaw();
                     setPathState(7);
                 }
                 break;
 
             case 7:
-                if (!follower.isBusy()) {
-                    sideArm.closeClaw();
+                if (!sideArm.isBusy()) {
+                    sideArm.moveLiftTo(2400);
+                    follower.followPath(line8To9);
                     setPathState(8);
                 }
                 break;
 
             case 8:
-                if (!sideArm.isBusy()) {
-                    follower.setMaxPower(1.0);
-                    sideArm.moveLiftTo(2400);
-                    follower.followPath(line8To9);
+                if (!sideArm.isBusy() && !follower.isBusy()) {
+                    follower.followPath(line10, true);
                     setPathState(9);
                 }
                 break;
 
             case 9:
-                if (!sideArm.isBusy() && !follower.isBusy()) {
-                    follower.followPath(line10, true);
+                if (!follower.isBusy()) {
+                    sideArm.moveLiftTo(1615);
                     setPathState(10);
                 }
                 break;
 
+
             case 10:
-                if (!follower.isBusy()) {
-                    sideArm.moveLiftTo(1525);
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
+                    follower.followPath(line11To12, true);
                     setPathState(11);
                 }
                 break;
 
             case 11:
-                if (!sideArm.isBusy()) {
-                    sideArm.openClaw();
-                    sideArm.moveLiftTo(0);
+                if (!follower.isBusy()) {
+                    waitTimer.startTimer(1.5);
                     setPathState(12);
                 }
                 break;
 
             case 12:
-                if (!sideArm.isBusy()) {
-                    follower.followPath(line11To12, true);
+                if (waitTimer.isDone()) {
+                    follower.setMaxPower(0.4);
+                    follower.followPath(line13, true);
                     setPathState(13);
                 }
                 break;
 
             case 13:
                 if (!follower.isBusy()) {
-                    waitTimer.startTimer(1);
+                    follower.setMaxPower(1.0);
+                    sideArm.closeClaw();
                     setPathState(14);
                 }
                 break;
 
             case 14:
-                if (waitTimer.isDone()) {
-                    follower.setMaxPower(0.5);
-                    follower.followPath(line13, true);
+                if (!sideArm.isBusy()) {
+                    sideArm.moveLiftTo(2400);
+                    follower.followPath(line14To15);
                     setPathState(15);
                 }
-                break;
 
             case 15:
-                if (!follower.isBusy()) {
-                    sideArm.closeClaw();
+                if (!sideArm.isBusy() && !sideArm.isBusy()) {
+                    follower.followPath(line16, true);
                     setPathState(16);
                 }
                 break;
 
+
             case 16:
-                if (!sideArm.isBusy()) {
-                    follower.setMaxPower(1.0);
-                    sideArm.moveLiftTo(2400);
-                    follower.followPath(line14To15);
+                if (!follower.isBusy()) {
+                    sideArm.moveLiftTo(1615);
                     setPathState(17);
                 }
+                break;
 
             case 17:
-                if (!sideArm.isBusy() && !sideArm.isBusy()) {
-                    follower.followPath(line16, true);
+                if (!sideArm.isBusy()) {
+                    sideArm.openClaw();
+                    sideArm.moveLiftTo(0);
+                    follower.followPath(line17To18);
                     setPathState(18);
                 }
                 break;
 
-
             case 18:
-                if (!follower.isBusy()) {
-                    sideArm.moveLiftTo(1525);
-                    setPathState(19);
-                }
-                break;
-
-            case 19:
-                if (!sideArm.isBusy()) {
-                    sideArm.openClaw();
-                    sideArm.moveLiftTo(0);
-                    setPathState(20);
-                }
-                break;
-
-            case 20:
-                if (!sideArm.isBusy()) {
-                    follower.followPath(line17To18);
-                    setPathState(21);
-                }
-                break;
-
-            case 21:
                 if (!follower.isBusy() && !sideArm.isBusy()) {
                     requestOpModeStop();
                 }

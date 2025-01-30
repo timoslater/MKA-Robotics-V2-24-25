@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name = "Pitching Arm Test", group = "Linear Opmode")
+//@TeleOp(name = "Pitching Arm Test", group = "Linear Opmode")
 public class PitchingArmTest extends LinearOpMode {
 
     private Servo wristX = null;
