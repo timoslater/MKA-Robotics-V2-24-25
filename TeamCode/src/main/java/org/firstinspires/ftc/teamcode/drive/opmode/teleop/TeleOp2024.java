@@ -7,13 +7,13 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.utils.MotorController;
-import org.firstinspires.ftc.teamcode.utils.PIDController;
+import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
 
 @Config
 @TeleOp(name = "MAIN", group = "Linear Opmode")
@@ -24,8 +24,8 @@ public class TeleOp2024 extends LinearOpMode {
     private DcMotor leftRear = null;
     //private DcMotor revArm = null;
     private DcMotor rightRear = null;
-    private DcMotor lift1 = null;
-    private DcMotor lift2 = null;
+    private DcMotorEx lift1 = null;
+    private DcMotorEx lift2 = null;
     private DcMotor slide = null;
     private DcMotor specimen = null;
     private Servo claw = null;
@@ -42,7 +42,7 @@ public class TeleOp2024 extends LinearOpMode {
     private int rotateIndex;
     private double[] rotatePositions = {.055,.222, .555,.888};
 
-    private MotorController liftController;
+    private MotorPositionController liftController;
     public static double p = 0, i = 0, d = 0;
     public static double f = 0;
     public static int target = 0;
@@ -170,12 +170,12 @@ public class TeleOp2024 extends LinearOpMode {
         leftRear.setDirection(DcMotor.Direction.FORWARD);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
 
-        lift1 = hardwareMap.get(DcMotor.class, "lift");
+        lift1 = hardwareMap.get(DcMotorEx.class, "lift");
         lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lift2 = hardwareMap.get(DcMotor.class, "lift2");
+        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
         lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -204,7 +204,7 @@ public class TeleOp2024 extends LinearOpMode {
 
         driveGamepad = gamepad1;
 
-        liftController = new MotorController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, lastPos);
+        liftController = new MotorPositionController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, lastPos);
 
 
         waitForStart();

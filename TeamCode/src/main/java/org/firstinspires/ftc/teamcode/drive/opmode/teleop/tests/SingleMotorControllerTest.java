@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.teleop.tests;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -11,12 +9,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.utils.MotorController;
+import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
 
-//@Config
-//@TeleOp(name = "Motor Controller Test", group = "Linear Opmode")
-public class MotorControllerTest extends LinearOpMode {
+@Config
+@TeleOp(name = "Single Motor Controller Test", group = "Linear Opmode")
+public class SingleMotorControllerTest extends LinearOpMode {
     public static double p = 0, i = 0, d = 0, f = 0;
 
     public static int target = 0;
@@ -26,12 +23,12 @@ public class MotorControllerTest extends LinearOpMode {
     public static boolean reverse = false;
 
     private DcMotorEx testMotor;
-    private MotorController motorController;
+    private MotorPositionController motorController;
 
     @Override
     public void runOpMode() {
         testMotor = hardwareMap.get(DcMotorEx.class, "testMotor");
-        motorController = new MotorController(testMotor, p, i, d, f, ticks,0);
+        motorController = new MotorPositionController(testMotor, null, p, i, d, f, ticks,0);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -49,7 +46,7 @@ public class MotorControllerTest extends LinearOpMode {
                 testMotor.setDirection(DcMotorSimple.Direction.FORWARD);
             }
 
-            motorController.setValues(testMotor, null, p, i, d, f, ticks, target);
+            motorController.updatePositionValues(p, i, d, f, ticks, target);
             motorController.update();
 
             telemetry.addData("position", testMotor.getCurrentPosition());

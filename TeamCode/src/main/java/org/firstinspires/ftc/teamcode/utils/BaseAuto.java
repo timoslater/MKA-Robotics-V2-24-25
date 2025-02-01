@@ -1,12 +1,5 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.ams.AMSColorSensor;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,9 +7,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.utils.MotorController;
-import org.firstinspires.ftc.teamcode.utils.PIDController;
 
 public abstract class BaseAuto extends OpMode {
 
@@ -39,9 +29,9 @@ public abstract class BaseAuto extends OpMode {
     }
     public class MainArm {
         private DcMotorEx lift1, lift2;
-        private MotorController liftController;
+        private MotorPositionController liftController;
         private DcMotorEx slide;
-        private MotorController slideController;
+        private MotorPositionController slideController;
 
         public MainArm(HardwareMap hardwareMap) {
             lift1 = hardwareMap.get(DcMotorEx.class, "lift");
@@ -55,13 +45,13 @@ public abstract class BaseAuto extends OpMode {
             lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             lift2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-            liftController = new MotorController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, 0);
+            liftController = new MotorPositionController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, 0);
 
             slide = hardwareMap.get(DcMotorEx.class, "slide");
             slide.setDirection(DcMotor.Direction.REVERSE);
             slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            slideController = new MotorController(slide, 0.003, 0, 0.00001, 0, 751.8 , 0);
+            slideController = new MotorPositionController(slide, null, 0.003, 0, 0.00001, 0, 751.8 , 0);
 
 
         }
@@ -88,7 +78,7 @@ public abstract class BaseAuto extends OpMode {
 
     public class SideArm {
         private DcMotorEx lift;
-        private MotorController liftController;
+        private MotorPositionController liftController;
         private Servo grabber;
 
         private ElapsedTime servoTimer;
@@ -101,7 +91,7 @@ public abstract class BaseAuto extends OpMode {
             lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            liftController = new MotorController(lift, 0.01, 0, 0.0001, 0, 537.7,0);
+            liftController = new MotorPositionController(lift, null, 0.01, 0, 0.0001, 0, 537.7,0);
 
             grabber = hardwareMap.get(Servo.class, "clawSpecimen");
 
