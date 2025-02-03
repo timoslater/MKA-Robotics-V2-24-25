@@ -2,19 +2,24 @@ package org.firstinspires.ftc.teamcode.utils;
 
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 public class AxonServo {
-    private Servo servo;
+    private ServoImplEx servo;
     private AnalogInput analogInput;
 
-    public AxonServo(Servo servo, AnalogInput analogInput) {
+    public AxonServo(ServoImplEx servo, AnalogInput analogInput) {
         this.servo = servo;
         this.analogInput = analogInput;
     }
 
-    public AxonServo(Servo servo) {
+    public AxonServo(ServoImplEx servo) {
         this.servo = servo;
     }
+
+    public void activate() { servo.setPwmEnable(); }
+
+    public void deactivate() { servo.setPwmDisable();}
 
     public void setPosition(double position) {
         servo.setPosition(position);
