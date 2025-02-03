@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.LightBlinker;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.teamcode.utils.AxonServo;
 import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
@@ -23,8 +24,8 @@ public class PositionValuesTester extends LinearOpMode {
     private AxonServo elbow1, elbow2, wrist, rotate, grab;
     private MotorPositionController liftController, slideController;
     public static int liftTargetPosition, slideTargetPosition;
-
     public static double elbowPosition, wristPosition, rotatePosition, grabPosition;
+    public static boolean movementDisabled = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -52,16 +53,16 @@ public class PositionValuesTester extends LinearOpMode {
         slide2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        elbow1 = new AxonServo(hardwareMap.get(Servo.class, "elbow1"), hardwareMap.get(AnalogInput.class, "elbow1Input"));
+        elbow1 = new AxonServo(hardwareMap.get(ServoImplEx.class, "elbow1"), hardwareMap.get(AnalogInput.class, "elbow1Input"));
 
-        elbow2 = new AxonServo(hardwareMap.get(Servo.class, "elbow2"), hardwareMap.get(AnalogInput.class, "elbow2Input"));
+        elbow2 = new AxonServo(hardwareMap.get(ServoImplEx.class, "elbow2"), hardwareMap.get(AnalogInput.class, "elbow2Input"));
         elbow2.setDirection(Servo.Direction.REVERSE);
 
-        wrist = new AxonServo(hardwareMap.get(Servo.class, "wrist"), hardwareMap.get(AnalogInput.class, "wristInput"));
+        wrist = new AxonServo(hardwareMap.get(ServoImplEx.class, "wrist"), hardwareMap.get(AnalogInput.class, "wristInput"));
 
-        rotate = new AxonServo(hardwareMap.get(Servo.class, "rotate"), hardwareMap.get(AnalogInput.class, "rotateInput"));
+        rotate = new AxonServo(hardwareMap.get(ServoImplEx.class, "rotate"), hardwareMap.get(AnalogInput.class, "rotateInput"));
 
-        grab = new AxonServo(hardwareMap.get(Servo.class, "grab"), hardwareMap.get(AnalogInput.class, "grabInput"));
+        grab = new AxonServo(hardwareMap.get(ServoImplEx.class, "grab"), hardwareMap.get(AnalogInput.class, "grabInput"));
 
         liftController = new MotorPositionController(lift1, lift2, new MotorSyncController(0, 0, 0), 0, 0, 0, 0, 0, 0);
         slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0, 0, 0), 0, 0, 0, 0, 0, 0);
@@ -70,20 +71,41 @@ public class PositionValuesTester extends LinearOpMode {
         resetRuntime();
 
         while (opModeIsActive()) {
-            liftController.setTarget(liftTargetPosition);
-            liftController.update();
+            if (movementDisabled) {
+                elbow1.deactivate();
+                elbow2.deactivate();
+                wrist.deactivate();
+                rotate.deactivate();
+                grab.deactivate();
 
-            slideController.setTarget(slideTargetPosition);
-            slideController.update();
+                telemetry.addLine("Press X to Enable Movement (Set Position Values First!)");
+                telemetry.update();
 
-            elbow1.setPosition(elbowPosition);
-            elbow2.setPosition(elbowPosition);
+                if (gamepad1.x) {
+                    movementDisabled = false;
 
-            wrist.setPosition(wristPosition);
+                    elbow1.activate();
+                    elbow2.activate();
+                    wrist.activate();
+                    rotate.activate();
+                    grab.activate();
+                }
+            } else {
+                liftController.setTarget(liftTargetPosition);
+                liftController.update();
 
-            rotate.setPosition(rotatePosition);
+                slideController.setTarget(slideTargetPosition);
+                slideController.update();
 
-            grab.setPosition(grabPosition);
+                elbow1.setPosition(elbowPosition);
+                elbow2.setPosition(elbowPosition);
+
+                wrist.setPosition(wristPosition);
+
+                rotate.setPosition(rotatePosition);
+
+                grab.setPosition(grabPosition);
+            }
         }
     }
 }
