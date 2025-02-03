@@ -77,19 +77,15 @@ public class PositionValuesTester extends LinearOpMode {
                 rotate.deactivate();
                 grab.deactivate();
 
-                telemetry.addLine("Press X to Enable Movement (Set Position Values First!)");
-                telemetry.update();
+                telemetry.addLine("Enable/Disable Movement By Changing \"movementDisabled\" (Set Position Values First!)");
 
-                if (gamepad1.x) {
-                    movementDisabled = false;
-
-                    elbow1.activate();
-                    elbow2.activate();
-                    wrist.activate();
-                    rotate.activate();
-                    grab.activate();
-                }
             } else {
+                elbow1.activate();
+                elbow2.activate();
+                wrist.activate();
+                rotate.activate();
+                grab.activate();
+
                 liftController.setTarget(liftTargetPosition);
                 liftController.update();
 
@@ -104,6 +100,24 @@ public class PositionValuesTester extends LinearOpMode {
                 rotate.setPosition(rotatePosition);
 
                 grab.setPosition(grabPosition);
+
+                try {
+                    telemetry.addData("elbow1 servo position", elbow1.getPosition());
+                    telemetry.addData("elbow2 servo position", elbow2.getPosition());
+                    telemetry.addData("wrist servo position", wrist.getPosition());
+                    telemetry.addData("rotate servo position", rotate.getPosition());
+                    telemetry.addData("grab servo position", grab.getPosition());
+
+                    telemetry.addData("lift1 motor position", lift1.getCurrentPosition());
+                    telemetry.addData("lift2 motor position", lift2.getCurrentPosition());
+                    telemetry.addData("slide1 motor position", slide1.getCurrentPosition());
+                    telemetry.addData("slide2 motor position", slide2.getCurrentPosition());
+
+                    telemetry.update();
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
