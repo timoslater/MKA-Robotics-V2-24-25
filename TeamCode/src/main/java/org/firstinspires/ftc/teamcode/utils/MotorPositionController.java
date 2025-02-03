@@ -35,7 +35,7 @@ public class MotorPositionController {
         motorPower1 = Math.min(calculatedPower, maxPower);
         motor1.setPower(motorPower1);
         if (motor2 != null) {
-            syncValue = syncController.getMultiplier(motor2.getVelocity(), motor1.getVelocity());
+            syncValue = syncController.getSyncValue(motor2.getVelocity(), motor1.getVelocity());
             motorPower2 = motorPower1 + syncValue;
             motor2.setPower(motorPower2);
         }

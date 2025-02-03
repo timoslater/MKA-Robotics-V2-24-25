@@ -8,10 +8,8 @@ public class MotorSyncController {
         updateValues(p, i, d);
     }
 
-    public double getMultiplier(double actualVelocity, double targetVelocity) {
-        double powerMultiplier = pid.calculate(actualVelocity, targetVelocity);
-
-        return powerMultiplier;
+    public double getSyncValue(double actualVelocity, double targetVelocity) {
+        return pid.calculate(actualVelocity, targetVelocity);
     }
 
     public void updateValues(double p, double i, double d) {
