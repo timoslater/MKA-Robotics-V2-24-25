@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.teleop.tests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -12,10 +15,13 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-//@TeleOp(group = "drive")
+@Config
+@TeleOp(group = "drive")
 public class ServoTest extends LinearOpMode {
     private ServoImplEx test = null;
     private boolean running = false;
+    public static double target;
+    public static boolean reversed;
 
     private void setPosControlled(Servo servo, double endPos, double step) {
 
@@ -41,7 +47,7 @@ public class ServoTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         test = hardwareMap.get(ServoImplEx.class, "testServo");
-
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
         waitForStart();
@@ -49,12 +55,13 @@ public class ServoTest extends LinearOpMode {
         double startPos = test.getPosition();
 
         while (!isStopRequested() && opModeIsActive()) {
-            if (gamepad1.dpad_left) {
-                test.setPosition(test.getPosition()+.001);
+            test.setPosition(target);
+            if (reversed) {
+                test.setDirection(Servo.Direction.REVERSE);
+            } else {
+                test.setDirection(Servo.Direction.FORWARD);
             }
-            else if (gamepad1.dpad_right && !running) {
-                test.setPosition(test.getPosition()-.001);
-            }
+
 
             telemetry.addData("Servo Position", test.getPosition());
             telemetry.update();
