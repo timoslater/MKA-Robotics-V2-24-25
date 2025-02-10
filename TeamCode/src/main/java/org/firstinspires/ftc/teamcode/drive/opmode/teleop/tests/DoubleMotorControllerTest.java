@@ -29,8 +29,8 @@ public class DoubleMotorControllerTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        testMotor1 = hardwareMap.get(DcMotorEx.class, "testMotor1");
-        testMotor2 = hardwareMap.get(DcMotorEx.class, "testMotor2");
+        testMotor1 = hardwareMap.get(DcMotorEx.class, "slide1");
+        testMotor2 = hardwareMap.get(DcMotorEx.class, "slide2");
 
         positionController = new MotorPositionController(testMotor1, testMotor2, new MotorSyncController(syncP, syncI, syncD), positionP, positionI, positionD, positionF, ticks, 0);
 
@@ -39,6 +39,7 @@ public class DoubleMotorControllerTest extends LinearOpMode {
         testMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         testMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         testMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         testMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         testMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -48,13 +49,13 @@ public class DoubleMotorControllerTest extends LinearOpMode {
         resetRuntime();
 
         while (opModeIsActive()) {
-            if (reverse) {
-                testMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
-                testMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
-            } else {
-                testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
-                testMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
-            }
+//            if (reverse) {
+//                testMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
+//                testMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+//            } else {
+//                testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+//                testMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
+//            }
 
             positionController.updatePositionValues(positionP, positionI, positionD, positionF, ticks, target);
             positionController.updateSyncValues(syncP, syncI, syncD);

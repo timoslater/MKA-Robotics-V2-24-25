@@ -8,8 +8,7 @@ public class MotorPositionController {
     private double syncP = 0, syncI = 0, syncD = 0;
     private double ff = 0;
     private int target = 0;
-    private final double ticks = 384.5; // for 435 rpm motors
-    private final double maxPower = 0.9;
+    private final double ticks = 384.5; // for 435 rpm motor
     public DcMotorEx motor1, motor2;
     private MotorSyncController syncController;
     private double motorPower1, motorPower2;
@@ -31,8 +30,7 @@ public class MotorPositionController {
     }
 
     public void update() {
-        double calculatedPower = pid.calculate(motor1.getCurrentPosition(), target);
-        motorPower1 = Math.min(calculatedPower, maxPower);
+        motorPower1 = pid.calculate(motor1.getCurrentPosition(), target);
         motor1.setPower(motorPower1);
         if (motor2 != null) {
             syncValue = syncController.getSyncValue(motor2.getVelocity(), motor1.getVelocity());
