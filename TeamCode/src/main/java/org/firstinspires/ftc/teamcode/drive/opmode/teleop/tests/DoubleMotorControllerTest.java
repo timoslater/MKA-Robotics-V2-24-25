@@ -29,8 +29,8 @@ public class DoubleMotorControllerTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        testMotor1 = hardwareMap.get(DcMotorEx.class, "testMotor1");
-        testMotor2 = hardwareMap.get(DcMotorEx.class, "testMotor2");
+        testMotor1 = hardwareMap.get(DcMotorEx.class, "slide1");
+        testMotor2 = hardwareMap.get(DcMotorEx.class, "slide2");
 
         positionController = new MotorPositionController(testMotor1, testMotor2, new MotorSyncController(syncP, syncI, syncD), positionP, positionI, positionD, positionF, ticks, 0);
 
@@ -64,6 +64,7 @@ public class DoubleMotorControllerTest extends LinearOpMode {
             double motorVelocity2 = testMotor2.getVelocity();
 
             telemetry.addData("position", testMotor1.getCurrentPosition());
+            telemetry.addData("position2", testMotor2.getCurrentPosition());
             telemetry.addData("motor1 (main) velocity", motorVelocity1);
             telemetry.addData("motor1 (main) power", positionController.getMotorPower1());
             telemetry.addData("motor2 (secondary) velocity", motorVelocity2);

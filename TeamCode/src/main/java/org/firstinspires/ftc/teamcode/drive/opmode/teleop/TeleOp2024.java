@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
+import org.firstinspires.ftc.teamcode.utils.PIDController;
 
 @Config
 @TeleOp(name = "MAIN", group = "Linear Opmode")
@@ -24,8 +25,7 @@ public class TeleOp2024 extends LinearOpMode {
     private DcMotor leftRear = null;
     //private DcMotor revArm = null;
     private DcMotor rightRear = null;
-    private DcMotorEx lift1 = null;
-    private DcMotorEx lift2 = null;
+    private DcMotorEx lift = null;
     private DcMotor slide = null;
     private DcMotor specimen = null;
     private Servo claw = null;
@@ -37,16 +37,18 @@ public class TeleOp2024 extends LinearOpMode {
     private IMU imu;
     private Servo hand;
     private Servo elbow;
-    private int lastPos = 325;
+    private int lastPos = 0;
     private boolean isDropping = false;
     private int rotateIndex;
     private double[] rotatePositions = {.055,.222, .555,.888};
 
-    private MotorPositionController liftController;
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
+    //private MotorPositionController liftController;
+    private PIDController controller;
+
+    public static double p = 0.002, i = 0, d = 0.0003;
+    public static double f = 0.1;
     public static int target = 0;
-    private final double ticks = 384.5;
+    private final double ticks = 1425.1;
 
     public boolean liftRunning = false;
     public boolean positionSet = false;
@@ -72,14 +74,22 @@ public class TeleOp2024 extends LinearOpMode {
         leftRear.setPower(v3);
         rightRear.setPower(v4);
     }
+    public void moveLift(){
+        controller.setPID(p, i, d);
+        int armPosition = lift.getCurrentPosition();
+        double pid = controller.calculate(armPosition,target);
+        double ff = Math.cos(Math.toRadians(target/ticks)) * f;
 
-    public void liftUp(double power) {
-        lift1.setPower(power);
-        lift2.setPower(power);
+        double power = pid + ff;
+
+        lift.setPower(power);
     }
-    public void liftDown(double power) {
-        lift1.setPower(-power);
-        lift2.setPower(-power);
+    public void liftUp() {
+        target = 1000;
+    }
+
+    public void liftDown() {
+        target = 0;
     }
 
     public void slideUp() {
@@ -170,32 +180,33 @@ public class TeleOp2024 extends LinearOpMode {
         leftRear.setDirection(DcMotor.Direction.FORWARD);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
 
-        lift1 = hardwareMap.get(DcMotorEx.class, "lift");
-        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
-        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        slide = hardwareMap.get(DcMotor.class, "slide");
-        slide.setDirection(DcMotor.Direction.REVERSE);
-        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        specimen = hardwareMap.get(DcMotor.class, "specimen");
-        specimen.setDirection(DcMotorSimple.Direction.REVERSE);
-        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        claw = hardwareMap.get(Servo.class, "grabber");
-        rotate = hardwareMap.get(Servo.class,"rotator");
-        clawSpecimen = hardwareMap.get(Servo.class, "clawSpecimen");
-        elbow = hardwareMap.get(Servo.class, "elbow");
-        hand = hardwareMap.get(Servo.class, "hand");
-
-        //AsyncArmActions armControl = new AsyncArmActions(0.25, this);
+        lift = hardwareMap.get(DcMotorEx.class, "lift");
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //lift.setDirection(DcMotorSimple.Direction.REVERSE);
+//
+//        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
+//        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        lift2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+//
+//        slide = hardwareMap.get(DcMotor.class, "slide");
+//        slide.setDirection(DcMotor.Direction.REVERSE);
+//        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        specimen = hardwareMap.get(DcMotor.class, "specimen");
+//        specimen.setDirection(DcMotorSimple.Direction.REVERSE);
+//        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        claw = hardwareMap.get(Servo.class, "grabber");
+//        rotate = hardwareMap.get(Servo.class,"rotator");
+//        clawSpecimen = hardwareMap.get(Servo.class, "clawSpecimen");
+//        elbow = hardwareMap.get(Servo.class, "elbow");
+//        hand = hardwareMap.get(Servo.class, "hand");
+//
+//        //AsyncArmActions armControl = new AsyncArmActions(0.25, this);
         Gamepad currDriveGamepad = new Gamepad();
         Gamepad currArmGamepad = new Gamepad();
 
@@ -203,9 +214,10 @@ public class TeleOp2024 extends LinearOpMode {
         Gamepad prevArmGamepad = new Gamepad();
 
         driveGamepad = gamepad1;
-
-        liftController = new MotorPositionController(lift1, lift2, 0.009, 0, 0.0001, 0.05, 384.5, lastPos);
-
+        armGamepad = gamepad1;
+//
+        controller = new PIDController(p, i, d);
+//
 
         waitForStart();
 
@@ -213,85 +225,70 @@ public class TeleOp2024 extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             //armControl.moveLiftTo(2400);
-
-            if (!positionSet && lift1.getCurrentPosition() > 250) {
-                positionSet = true;
-                armPositionIdle();
-            }
-
+//
+//            if (!positionSet && lift1.getCurrentPosition() > 250) {
+//                positionSet = true;
+//                armPositionIdle();
+//            }
+//
             movement();
-
-            armGamepad = gamepad2.getGamepadId() == -1 ? gamepad1 : gamepad2;
-
-            prevArmGamepad.copy(currArmGamepad);
-            prevDriveGamepad.copy(currDriveGamepad);
-
-            currArmGamepad.copy(armGamepad);
-            currDriveGamepad.copy(driveGamepad);
-
-
-            if (armGamepad.left_trigger > 0 && (lift1.getCurrentPosition() < 5900 || resetting)) {
-                liftUp(armGamepad.left_trigger * 0.75);
-                lastPos = lift1.getCurrentPosition();
-            } else if (armGamepad.right_trigger > 0) { //&& (lift1.getCurrentPosition() > 230 || resetting)) {
-                if (lift1.getCurrentPosition() < 60) {
-                    liftController.setTarget(60);
-                    liftController.update();
-                } else if (lift1.getCurrentPosition() < 400) {
-                    liftDown(armGamepad.right_trigger * 0.75 * Math.max(Math.pow(minLiftPower, Math.abs(lift1.getCurrentPosition() - 0)), minLiftPower));
-                    // f(x) = (total power) * (min power)^(right_trigger)
-                } else {
-                    liftDown(armGamepad.right_trigger * 0.75);
-                }
-                lastPos = lift1.getCurrentPosition();
-            } else {
-                liftController.setTarget(lastPos);
-                liftController.update();
-            }
-
-            if (armGamepad.right_bumper) {
-                slideUp();
-            } else if (armGamepad.left_bumper) {
-                slideDown();
-            } else {
-                slide.setPower(0);
-            }
-
-            if (driveGamepad.options && driveGamepad.share) {
-                if (resetting) {
-                    lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    lift1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    resetting = false;
-                } else {
-                    resetting = true;
-                }
-            }
-
-            if (armGamepad.triangle) {
-                clawOpen();
-            } else if (armGamepad.cross) {
-                clawClose();
-            }
-            if (currArmGamepad.dpad_right && !prevArmGamepad.dpad_right){
-
-                rotateClawR();
-            } else if(currArmGamepad.dpad_left && !prevArmGamepad.dpad_left){
-                rotateClawL();
-            }
-
-            if(armGamepad.dpad_up){
-                specimenUp();
-            } else if(armGamepad.dpad_down){
-                specimenDown();
-            } else{
-                specimen.setPower(0);
-            }
-
-            if(armGamepad.square){
-                claw2Open();
-            } else if(armGamepad.circle){
-                claw2Close();
-            }
+        moveLift();
+//
+//            armGamepad = gamepad2.getGamepadId() == -1 ? gamepad1 : gamepad2;
+//
+//            prevArmGamepad.copy(currArmGamepad);
+//            prevDriveGamepad.copy(currDriveGamepad);
+//
+//            currArmGamepad.copy(armGamepad);
+//            currDriveGamepad.copy(driveGamepad);
+//
+//
+            if(gamepad1.dpad_up) liftUp();
+            if(gamepad1.dpad_down) liftDown();
+//
+//            if (armGamepad.right_bumper) {
+//                slideUp();
+//            } else if (armGamepad.left_bumper) {
+//                slideDown();
+//            } else {
+//                slide.setPower(0);
+//            }
+//
+//            if (driveGamepad.options && driveGamepad.share) {
+//                if (resetting) {
+//                    lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                    lift1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                    resetting = false;
+//                } else {
+//                    resetting = true;
+//                }
+//            }
+//
+//            if (armGamepad.triangle) {
+//                clawOpen();
+//            } else if (armGamepad.cross) {
+//                clawClose();
+//            }
+//            if (currArmGamepad.dpad_right && !prevArmGamepad.dpad_right){
+//
+//                rotateClawR();
+//            } else if(currArmGamepad.dpad_left && !prevArmGamepad.dpad_left){
+//                rotateClawL();
+//            }
+//
+//            if(armGamepad.dpad_up){
+//                specimenUp();
+//            } else if(armGamepad.dpad_down){
+//                specimenDown();
+//            } else{
+//                specimen.setPower(0);
+//            }
+//
+//            if(armGamepad.square){
+//                claw2Open();
+//            } else if(armGamepad.circle){
+//                claw2Close();
+//            }
 
             telemetry.addData("Is Resetting?", resetting);
             telemetry.addData("Lift Position", lastPos);
