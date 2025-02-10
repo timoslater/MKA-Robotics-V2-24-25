@@ -317,15 +317,16 @@ public class TeleOp2024 extends LinearOpMode {
                 double slidePower = armGamepad.left_trigger;
                 slide1.setPower(slidePower);
                 slide2.setPower(slidePower);
-                slideController.setTarget(slide1.getCurrentPosition());
             } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
                 double slidePower = armGamepad.right_trigger;
                 slide1.setPower(-slidePower);
                 slide2.setPower(-slidePower);
-                slideController.setTarget(slide1.getCurrentPosition());
             } else {
+                slideController.setTarget(slide1.getCurrentPosition());
                 slideController.update();
             }
+
+            liftController.update();
 
         telemetry.addData("Is Resetting?", resetting);
         telemetry.addData("Lift Position", lastPos);
