@@ -19,8 +19,8 @@ import org.firstinspires.ftc.teamcode.utils.MotorSyncController;
 @Config
 @TeleOp(name = "Position Values Tester", group = "Linear Opmode")
 public class PositionValuesTester extends LinearOpMode {
-    private DcMotorEx lift1, lift2, slide1, slide2;
-    private AxonServo elbow1, elbow2, wrist, rotate, grab;
+    private DcMotorEx lift, slide1, slide2;
+    private ServoImplEx elbow1, elbow2, wrist, rotate, grab;
     private MotorPositionController liftController, slideController;
     public static int liftTargetPosition, slideTargetPosition;
     public static double elbowPosition, wristPosition, rotatePosition, grabPosition;
@@ -30,17 +30,17 @@ public class PositionValuesTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        lift1 = hardwareMap.get(DcMotorEx.class, "lift1");
-        lift1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
-        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        lift = hardwareMap.get(DcMotorEx.class, "lift");
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        lift2 = hardwareMap.get(DcMotorEx.class, "lift2");
+//        lift2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        lift2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        lift2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        lift2.setDirection(DcMotorSimple.Direction.REVERSE);
+//
         slide1 = hardwareMap.get(DcMotorEx.class, "slide1");
         slide1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slide1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -52,73 +52,74 @@ public class PositionValuesTester extends LinearOpMode {
         slide2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        elbow1 = new AxonServo(hardwareMap.get(ServoImplEx.class, "elbow1"), hardwareMap.get(AnalogInput.class, "elbow1Input"));
+        elbow1 = hardwareMap.get(ServoImplEx.class, "elbow1");
+        elbow1.setDirection(Servo.Direction.REVERSE);
 
-        elbow2 = new AxonServo(hardwareMap.get(ServoImplEx.class, "elbow2"), hardwareMap.get(AnalogInput.class, "elbow2Input"));
-        elbow2.setDirection(Servo.Direction.REVERSE);
+        elbow2 = hardwareMap.get(ServoImplEx.class, "elbow2");
 
-        wrist = new AxonServo(hardwareMap.get(ServoImplEx.class, "wrist"), hardwareMap.get(AnalogInput.class, "wristInput"));
+        wrist = hardwareMap.get(ServoImplEx.class, "wrist");
 
-        rotate = new AxonServo(hardwareMap.get(ServoImplEx.class, "rotate"), hardwareMap.get(AnalogInput.class, "rotateInput"));
+        rotate = hardwareMap.get(ServoImplEx.class, "rotate");
 
-        grab = new AxonServo(hardwareMap.get(ServoImplEx.class, "grab"), hardwareMap.get(AnalogInput.class, "grabInput"));
+        grab = hardwareMap.get(ServoImplEx.class, "grab");
 
-        liftController = new MotorPositionController(lift1, lift2, new MotorSyncController(0, 0, 0), 0, 0, 0, 0, 0, 0);
+        liftController = new MotorPositionController(lift, null,0.002, 0, 0.0003, 0.1, 384.5, 0);
         slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0, 0, 0), 0, 0, 0, 0, 0, 0);
 
         waitForStart();
         resetRuntime();
 
         while (opModeIsActive()) {
-            if (movementDisabled) {
-                elbow1.deactivate();
-                elbow2.deactivate();
-                wrist.deactivate();
-                rotate.deactivate();
-                grab.deactivate();
+//            if (movementDisabled) {
+//                elbow1.deactivate();
+//                elbow2.deactivate();
+//                wrist.deactivate();
+//                rotate.deactivate();
+//                grab.deactivate();
+//
+//                telemetry.addLine("Enable/Disable Movement By Changing \"movementDisabled\" (Set Position Values First!)");
+//
+//            } else {
+//                elbow1.activate();
+//                elbow2.activate();
+//                wrist.activate();
+//                rotate.activate();
+//                grab.activate();
+            elbow1.setPosition(elbowPosition);
+            elbow2.setPosition(elbowPosition);
 
-                telemetry.addLine("Enable/Disable Movement By Changing \"movementDisabled\" (Set Position Values First!)");
+            wrist.setPosition(wristPosition);
 
-            } else {
-                elbow1.activate();
-                elbow2.activate();
-                wrist.activate();
-                rotate.activate();
-                grab.activate();
+            rotate.setPosition(rotatePosition);
 
+            grab.setPosition(grabPosition);
+//
                 liftController.setTarget(liftTargetPosition);
                 liftController.update();
-
+//
                 slideController.setTarget(slideTargetPosition);
                 slideController.update();
 
-                elbow1.setPosition(elbowPosition);
-                elbow2.setPosition(elbowPosition);
 
-                wrist.setPosition(wristPosition);
+//
+//                try {
+//                    telemetry.addData("elbow1 servo position", elbow1.getPosition());
+//                    telemetry.addData("elbow2 servo position", elbow2.getPosition());
+//                    telemetry.addData("wrist servo position", wrist.getPosition());
+//                    telemetry.addData("rotate servo position", rotate.getPosition());
+//                    telemetry.addData("grab servo position", grab.getPosition());
+////
+//                    telemetry.addData("lift motor position", lift.getCurrentPosition());
+////                    telemetry.addData("lift2 motor position", lift2.getCurrentPosition());
+////                    telemetry.addData("slide1 motor position", slide1.getCurrentPosition());
+////                    telemetry.addData("slide2 motor position", slide2.getCurrentPosition());
+//
+//                    telemetry.update();
+//
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
 
-                rotate.setPosition(rotatePosition);
-
-                grab.setPosition(grabPosition);
-
-                try {
-                    telemetry.addData("elbow1 servo position", elbow1.getPosition());
-                    telemetry.addData("elbow2 servo position", elbow2.getPosition());
-                    telemetry.addData("wrist servo position", wrist.getPosition());
-                    telemetry.addData("rotate servo position", rotate.getPosition());
-                    telemetry.addData("grab servo position", grab.getPosition());
-
-                    telemetry.addData("lift1 motor position", lift1.getCurrentPosition());
-                    telemetry.addData("lift2 motor position", lift2.getCurrentPosition());
-                    telemetry.addData("slide1 motor position", slide1.getCurrentPosition());
-                    telemetry.addData("slide2 motor position", slide2.getCurrentPosition());
-
-                    telemetry.update();
-
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 }

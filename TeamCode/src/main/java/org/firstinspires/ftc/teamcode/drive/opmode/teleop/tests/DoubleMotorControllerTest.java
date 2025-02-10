@@ -39,6 +39,7 @@ public class DoubleMotorControllerTest extends LinearOpMode {
         testMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         testMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         testMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         testMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         testMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -48,13 +49,13 @@ public class DoubleMotorControllerTest extends LinearOpMode {
         resetRuntime();
 
         while (opModeIsActive()) {
-            if (reverse) {
-                testMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
-                testMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
-            } else {
-                testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
-                testMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
-            }
+//            if (reverse) {
+//                testMotor1.setDirection(DcMotorSimple.Direction.FORWARD);
+//                testMotor2.setDirection(DcMotorSimple.Direction.REVERSE);
+//            } else {
+//                testMotor1.setDirection(DcMotorSimple.Direction.REVERSE);
+//                testMotor2.setDirection(DcMotorSimple.Direction.FORWARD);
+//            }
 
             positionController.updatePositionValues(positionP, positionI, positionD, positionF, ticks, target);
             positionController.updateSyncValues(syncP, syncI, syncD);

@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.teleop.tests;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoImplEx;
+
+import java.util.ArrayList;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -15,31 +15,22 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@Config
 @TeleOp(group = "drive")
-public class ServoTest extends LinearOpMode {
-    private ServoImplEx test1;
-    private boolean running = false;
-    public static double target;
-    public static boolean reverse;
+public class AxonPositionTest extends LinearOpMode {
+    private AnalogInput servoReader1, servoReader2;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        test1 = hardwareMap.get(ServoImplEx.class, "testServo");
+        servoReader1 = hardwareMap.get(AnalogInput.class, "servoReader1");
+        servoReader2 = hardwareMap.get(AnalogInput.class, "servoReader2");
+
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
-            if (reverse) {
-                test1.setDirection(Servo.Direction.REVERSE);
-            } else {
-                test1.setDirection(Servo.Direction.FORWARD);
-            }
-
-
-            test1.setPosition(target);
+            telemetry.addData("servo 1", servoReader1.getVoltage() / 3.3 * 360);
+            telemetry.addData("servo 2", servoReader2.getVoltage() / 3.3 * 360);
             telemetry.update();
         }
 

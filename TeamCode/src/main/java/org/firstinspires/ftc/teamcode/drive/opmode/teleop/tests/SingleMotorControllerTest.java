@@ -18,7 +18,7 @@ public class SingleMotorControllerTest extends LinearOpMode {
 
     public static int target = 0;
 
-    public static double ticks = 384.5; // for 435 rpm motors
+    public static double ticks = 570; // for 435 rpm motors
 
     public static boolean reverse = false;
 
@@ -27,7 +27,7 @@ public class SingleMotorControllerTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        testMotor = hardwareMap.get(DcMotorEx.class, "testMotor");
+        testMotor = hardwareMap.get(DcMotorEx.class, "lift");
         motorController = new MotorPositionController(testMotor, null, p, i, d, f, ticks,0);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
