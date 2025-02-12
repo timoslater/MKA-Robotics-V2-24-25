@@ -45,12 +45,13 @@ public class PositionValuesTester extends LinearOpMode {
         slide1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slide1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slide1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide1.setDirection(DcMotorSimple.Direction.REVERSE);
 
         slide2 = hardwareMap.get(DcMotorEx.class, "slide2");
         slide2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slide2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slide2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slide2.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         elbow1 = hardwareMap.get(ServoImplEx.class, "elbow1");
         elbow1.setDirection(Servo.Direction.REVERSE);
@@ -64,7 +65,7 @@ public class PositionValuesTester extends LinearOpMode {
         grab = hardwareMap.get(ServoImplEx.class, "grab");
 
         liftController = new MotorPositionController(lift, null,0.002, 0, 0.0003, 0.1, 384.5, 0);
-        slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0, 0, 0), 0, 0, 0, 0, 0, 0);
+        slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
 
         waitForStart();
         resetRuntime();

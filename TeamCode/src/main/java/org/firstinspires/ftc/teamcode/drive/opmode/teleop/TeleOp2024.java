@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
 import org.firstinspires.ftc.teamcode.utils.MotorSyncController;
@@ -60,9 +61,15 @@ public class TeleOp2024 extends LinearOpMode {
     public boolean positionSet = false;
     private double minLiftPower = 0.25;
 
+    private long stateStartTime = 0;
+    ElapsedTime time = new ElapsedTime();
+    public int subState = 0;
+    private boolean subStateDone = false;
+
     public enum RobotState {
         FLOOR_GRAB,
         SPECIMEN_GRAB,
+        SPECIMEN_TRANSITION,
         SPECIMEN_DROP,
         HIGH_BASKET,
         LOW_BASKET,
@@ -170,7 +177,7 @@ public class TeleOp2024 extends LinearOpMode {
 
 
         waitForStart();
-
+        stateStartTime = System.currentTimeMillis();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -204,7 +211,49 @@ public class TeleOp2024 extends LinearOpMode {
 //            }
 //
             switch (robotState) {
+
                 case NEUTRAL:
+
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                //reset slide
+                                slideController.setTarget(0);
+                                time.reset();
+                                subState++;
+
+                            case 1:
+                                //move lift
+                                if (time.seconds() > 1) {
+                                    liftController.setTarget(1100);
+                                    time.reset();
+                                    subState++;
+
+                                }
+                                break;
+                            case 2:
+                                //move elbow
+                                if (time.seconds() > 1) {
+                                    elbow1.setPosition(0);
+                                    elbow2.setPosition(0);
+                                    time.reset();
+                                    subState ++;
+                                }
+                                break;
+                            case 3:
+                                //move wrist
+                                if (time.seconds() > 1) {
+                                    wrist.setPosition(1);
+                                    rotate.setPosition(0);
+                                    subState = 0;
+                                    // Reset subState for next cycle
+                                    subStateDone = true;
+                                }
+                                break;
+
+                        }
+                        break;
+                    /*
                     liftController.setTarget(1200);
                     slideController.setTarget(0);
                     //grab.setPosition(0);
@@ -213,34 +262,167 @@ public class TeleOp2024 extends LinearOpMode {
                     wrist.setPosition(1);
                     rotate.setPosition(0);
                     break;
+                    */
+                    }
+
+
 
                 case FLOOR_GRAB:
+
                     liftController.setTarget(0);
                     slideController.setTarget(0);
                     //grab.setPosition(0);
                     rotate.setPosition(0);
 
                     if (grabbing) {
-                        elbow1.setPosition(0.55);
-                        elbow2.setPosition(0.55);
+                        elbow1.setPosition(0.6);
+                        elbow2.setPosition(0.6);
                         wrist.setPosition(0);
                     } else {
                         elbow1.setPosition(0.7); // hover
                         elbow2.setPosition(0.7);
-                        wrist.setPosition(0);
+                        wrist.setPosition(0.1);
                     }
+                    if(!subStateDone){
+                        time.reset();
+                        subState = 0;
+                        subStateDone = true;
+                    }
+
                     break;
 
                 case SPECIMEN_GRAB:
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                //reset slide
+                                slideController.setTarget(0);
+                                liftController.setTarget(1150);
+                                time.reset();
+                                subState++;
+                                break;
+
+
+                            case 1:
+                                //move lift
+                                if (time.seconds() > 1) {
+                                    slideController.setTarget(-80);
+                                    time.reset();
+                                    subState++;
+                                    break;
+                                }
+                                break;
+                            case 2:
+                                //move elbow
+                                if (time.seconds() > 1) {
+                                    elbow1.setPosition(.96);
+                                    elbow2.setPosition(.96);
+                                    time.reset();
+                                    subState ++;
+                                    break;
+                                }
+                                break;
+                            case 3:
+                                //move wrist
+                                if (time.seconds() > 1) {
+                                    wrist.setPosition(0.35);
+                                    rotate.setPosition(0);
+                                    subState = 0; // Reset subState for next cycle
+                                    subStateDone = true;
+                                }
+                                break;
+
+                        }
+                    /*
                     liftController.setTarget(750);
                     slideController.setTarget(0);
                     elbow1.setPosition(0); // sgrab
                     elbow2.setPosition(0);
                     wrist.setPosition(1);
                     rotate.setPosition(0);
-                    break;
+                    */
+                        break;
+                    }
+
+                case SPECIMEN_TRANSITION:
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                slideController.setTarget(0);
+                                liftController.setTarget(1100);
+                                time.reset();
+                                subState++;
+                                break;
+
+
+                            case 1:
+                                if (time.seconds() > 1) {
+                                    wrist.setPosition(0);
+
+
+
+                                    time.reset();
+                                    subState ++;
+                                }
+                                break;
+                            case 2:
+                                if (time.seconds() > 1) {
+
+                                    rotate.setPosition(0.65);
+                                    time.reset();
+                                    subState++;
+
+                                }
+                            case 3:
+                                if(time.seconds() > 1){
+                                    elbow1.setPosition(0.6);
+                                    elbow2.setPosition(0.6);
+                                    subState = 0; // Reset subState for next cycle
+                                    subStateDone = true;
+
+                                }
+
+                                break;
+
+                        }
+                        break;
+                    }
+
+
 
                 case SPECIMEN_DROP:
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                slideController.setTarget(-85);
+                                liftController.setTarget(1150);
+                                time.reset();
+                                subState++;
+                                break;
+
+
+                            case 1:
+                                if(time.seconds() > 1){
+                                    wrist.setPosition(0.6);
+                                    time.reset();
+                                    subState++;
+                                    break;
+                                }
+                            case 2:
+                                if (time.seconds() > 1) {
+                                    elbow1.setPosition(0.3);
+                                    elbow2.setPosition(0.3);
+
+                                    time.reset();
+                                    subState = 0;
+                                    subStateDone = true;
+                                }
+                                break;
+
+
+                        }
+
+                    /*
                     liftController.setTarget(1300);
                     slideController.setTarget(0);
                     //grab.setPosition(0);
@@ -248,9 +430,41 @@ public class TeleOp2024 extends LinearOpMode {
                     elbow2.setPosition(1);
                     wrist.setPosition(1);
                     rotate.setPosition(0.65);
-                    break;
+                    */
+
+                        break;
+                    }
+
 
                 case HIGH_BASKET:
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                liftController.setTarget(1150);
+                                time.reset();
+                                subState++;
+                                break;
+
+
+                            case 1:
+                                if (time.seconds() > 1) {
+                                    elbow1.setPosition(0.6); // sgrab
+                                    elbow2.setPosition(0.6);
+                                    time.reset();
+                                    subState ++;
+                                }
+                                break;
+                            case 2:
+                                if (time.seconds() > 1) {
+                                    wrist.setPosition(1);
+                                    rotate.setPosition(0.35);
+                                    subState = 0; // Reset subState for next cycle
+                                    subStateDone = true;
+                                }
+                                break;
+
+                        }
+                    /*
                     liftController.setTarget(1300);
                     slideController.setTarget(2000);
                     //grab.setPosition(0.75);
@@ -258,9 +472,50 @@ public class TeleOp2024 extends LinearOpMode {
                     elbow2.setPosition(0.7);
                     wrist.setPosition(1);
                     rotate.setPosition(0.35);
-                    break;
+                    */
+
+                        break;
+                    }
+
 
                 case LOW_BASKET:
+                    if(!subStateDone){
+                        switch (subState){
+                            case 0:
+                                liftController.setTarget(1300);
+                                time.reset();
+                                subState++;
+                                break;
+
+                            case 1:
+                                if (time.seconds() > 1) {
+                                    slideController.setTarget(1000);
+                                    time.reset();
+                                    subState++;
+
+                                }
+                                break;
+                            case 2:
+                                if (time.seconds() > 1) {
+                                    elbow1.setPosition(0.7); // sgrab
+                                    elbow2.setPosition(0.7);
+                                    time.reset();
+                                    subState ++;
+                                }
+                                break;
+                            case 3:
+                                if (time.seconds() > 1) {
+                                    wrist.setPosition(1);
+                                    rotate.setPosition(0.35);
+                                    subState = 0; // Reset subState for next cycle
+                                    subStateDone = true;
+                                }
+                                break;
+
+
+                        }
+
+                    /*
                     liftController.setTarget(1300);
                     slideController.setTarget(1000);
                     //grab.setPosition(0.75);
@@ -269,28 +524,38 @@ public class TeleOp2024 extends LinearOpMode {
                     wrist.setPosition(1);
                     rotate.setPosition(0.35);
                     break;
+                    */
+                    break;
+                    }
 
         }
 
             if (armGamepad.dpad_down) {
                 robotState = RobotState.FLOOR_GRAB;
+                subStateDone = false;
             }
 
             if (armGamepad.left_bumper) {
                 robotState = RobotState.SPECIMEN_DROP;
+                subStateDone = false;
             }
-
+            if (armGamepad.dpad_left){
+                robotState = RobotState.SPECIMEN_TRANSITION;
+                subStateDone = false;
+            }
             if (armGamepad.right_bumper) {
                 robotState = RobotState.SPECIMEN_GRAB;
+                subStateDone = false;
             }
 
             if (armGamepad.dpad_up) {
                 robotState = RobotState.HIGH_BASKET;
+                subStateDone = false;
             }
 
 
             if (armGamepad.triangle) {
-                grab.setPosition(0);
+                grab.setPosition(0.4);
             }
 
             if (armGamepad.cross) {
@@ -327,7 +592,9 @@ public class TeleOp2024 extends LinearOpMode {
             }
 
             liftController.update();
-
+        telemetry.addData("State", robotState);
+        telemetry.addData("subState", subState);
+        telemetry.addData("time", time.seconds());
         telemetry.addData("Is Resetting?", resetting);
         telemetry.addData("Lift Position", lastPos);
         telemetry.addData("Target", target);
