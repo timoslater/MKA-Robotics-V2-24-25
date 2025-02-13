@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
-//@Autonomous(name = "Rotate While Strafing Test", group = "Auto")
+@Autonomous(name = "Rotate While Strafing Test", group = "Auto")
 public class RotateWhileStrafingTest extends BaseAuto {
 
     private Follower follower;

@@ -29,8 +29,8 @@ import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
  * @author Harrison Womack - 10158 Scott's Bots
  * @version 1.0, 3/12/2024
  */
-//@Config
-//@Autonomous (name = "Straight Back And Forth", group = "PIDF Tuning")
+@Config
+@Autonomous (name = "Straight Back And Forth", group = "PIDF Tuning")
 public class StraightBackAndForth extends OpMode {
     private Telemetry telemetryA;
 
@@ -55,7 +55,7 @@ public class StraightBackAndForth extends OpMode {
         forwards = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(DISTANCE,0, Point.CARTESIAN)));
         forwards.setConstantHeadingInterpolation(0);
         backwards = new Path(new BezierLine(new Point(DISTANCE,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)));
-        backwards.setConstantHeadingInterpolation(Math.toRadians(90));
+        backwards.setConstantHeadingInterpolation(0);
 
         follower.followPath(forwards);
 
