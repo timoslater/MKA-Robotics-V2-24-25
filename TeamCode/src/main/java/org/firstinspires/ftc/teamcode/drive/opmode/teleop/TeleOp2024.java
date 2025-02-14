@@ -277,11 +277,11 @@ public class TeleOp2024 extends LinearOpMode {
                     if (grabbing) {
                         elbow1.setPosition(0.6);
                         elbow2.setPosition(0.6);
-                        wrist.setPosition(0);
+                        wrist.setPosition(.95);
                     } else {
                         elbow1.setPosition(0.7); // hover
                         elbow2.setPosition(0.7);
-                        wrist.setPosition(0.1);
+                        wrist.setPosition(.95);
                     }
                     if(!subStateDone){
                         time.reset();
@@ -305,27 +305,20 @@ public class TeleOp2024 extends LinearOpMode {
 
                             case 1:
                                 //move lift
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .2) {
                                     slideController.setTarget(-80);
                                     time.reset();
                                     subState++;
                                     break;
                                 }
                                 break;
+
                             case 2:
-                                //move elbow
-                                if (time.seconds() > 1) {
-                                    elbow1.setPosition(.96);
-                                    elbow2.setPosition(.96);
-                                    time.reset();
-                                    subState ++;
-                                    break;
-                                }
-                                break;
-                            case 3:
                                 //move wrist
-                                if (time.seconds() > 1) {
-                                    wrist.setPosition(0.35);
+                                if (time.seconds() > .25) {
+                                    elbow1.setPosition(.98);
+                                    elbow2.setPosition(.98);
+                                    wrist.setPosition(0.6);
                                     rotate.setPosition(0);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
@@ -356,8 +349,8 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if (time.seconds() > 1) {
-                                    wrist.setPosition(0);
+                                if (time.seconds() > .1) {
+                                    wrist.setPosition(1);
 
 
 
@@ -365,16 +358,10 @@ public class TeleOp2024 extends LinearOpMode {
                                     subState ++;
                                 }
                                 break;
+
                             case 2:
-                                if (time.seconds() > 1) {
-
+                                if(time.seconds() > .8){
                                     rotate.setPosition(0.65);
-                                    time.reset();
-                                    subState++;
-
-                                }
-                            case 3:
-                                if(time.seconds() > 1){
                                     elbow1.setPosition(0.6);
                                     elbow2.setPosition(0.6);
                                     subState = 0; // Reset subState for next cycle
@@ -402,17 +389,25 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if(time.seconds() > 1){
-                                    wrist.setPosition(0.6);
+                                if(time.seconds() > .25){
+                                    wrist.setPosition(0.35);
                                     time.reset();
                                     subState++;
                                     break;
                                 }
                             case 2:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .25) {
                                     elbow1.setPosition(0.3);
                                     elbow2.setPosition(0.3);
 
+                                    time.reset();
+                                    subState++;
+                                    break;
+                                }
+                                break;
+                            case 3:
+                                if(time.seconds() > .4){
+                                    grab.setPosition(.4);
                                     time.reset();
                                     subState = 0;
                                     subStateDone = true;
@@ -447,21 +442,16 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .8) {
                                     elbow1.setPosition(0.6); // sgrab
                                     elbow2.setPosition(0.6);
-                                    time.reset();
-                                    subState ++;
-                                }
-                                break;
-                            case 2:
-                                if (time.seconds() > 1) {
-                                    wrist.setPosition(1);
+                                    wrist.setPosition(0);
                                     rotate.setPosition(0.35);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
                                 }
                                 break;
+
 
                         }
                     /*
@@ -596,6 +586,7 @@ public class TeleOp2024 extends LinearOpMode {
         telemetry.addData("subState", subState);
         telemetry.addData("time", time.seconds());
         telemetry.addData("Is Resetting?", resetting);
+        telemetry.addData("Rotate", rotate.getPosition());
         telemetry.addData("Lift Position", lastPos);
         telemetry.addData("Target", target);
         telemetry.addData("rotate index", rotateIndex);
