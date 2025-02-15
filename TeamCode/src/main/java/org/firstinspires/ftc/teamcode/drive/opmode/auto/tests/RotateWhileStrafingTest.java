@@ -9,12 +9,13 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
-@Autonomous(name = "Rotate While Strafing Test", group = "Auto")
+@TeleOp(name = "Rotate While Strafing Test", group = "Teleop")
 public class RotateWhileStrafingTest extends BaseAuto {
 
     private Follower follower;
@@ -26,61 +27,29 @@ public class RotateWhileStrafingTest extends BaseAuto {
     private int pathState;
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
+    private Pose currentPose = startPose;
 
-    PathChain path1, path2;
+    PathChain movementPath;
 
     public void buildPaths() {
-        path1 = follower.pathBuilder()
+        movementPath = follower.pathBuilder()
                 .addPath(
                         // Line 1
                         new BezierLine(
-                                new Point(0.000, 0.000, Point.CARTESIAN),
-                                new Point(30.000, 0.000, Point.CARTESIAN)
+                                new Point(currentPose.getX(), currentPose.getY(), Point.CARTESIAN),
+                                new Point(currentPose.getX() + gamepad1.left_stick_x, currentPose.getY() + gamepad1.left_stick_y, Point.CARTESIAN)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-180))
+                .setConstantHeadingInterpolation(currentPose.getHeading() + gamepad1.right_stick_x)
                 .build();
-
-
-        path2 = follower.pathBuilder()
-                .addPath(
-                        // Line 2
-                        new BezierLine(
-                                new Point(30.000, 0.000, Point.CARTESIAN),
-                                new Point(0.000, 0.000, Point.CARTESIAN)
-                        )
-                )
-                .setLinearHeadingInterpolation(Math.toRadians(-180), Math.toRadians(0))
-                .build();
-
     }
 
     /** This switch is called continuously and runs the pathing, at certain points, it triggers the action state.
      * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
     public void autonomousPathUpdate() {
-        switch (pathState) {
-            case 0:
-                if (!follower.isBusy()) {
-                    follower.followPath(path1);
-                    setPathState(1);
-                }
-                break;
-
-            case 1:
-                if (!follower.isBusy()) {
-                    follower.followPath(path2);
-                    setPathState(0);
-                }
-                break;
-
-
-            default:
-                if (!follower.isBusy()) {
-                    requestOpModeStop();
-                }
-                break;
-        }
+        buildPaths();
+        follower.followPath(movementPath);
     }
 
     /** These change the states of the paths and actions

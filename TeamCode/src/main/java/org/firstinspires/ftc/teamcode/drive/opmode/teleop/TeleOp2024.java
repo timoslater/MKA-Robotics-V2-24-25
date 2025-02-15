@@ -109,13 +109,10 @@ public class TeleOp2024 extends LinearOpMode {
         slide2.setPower(-1);
     }
     public void rotateClawR() {
-
-        rotate.setPosition(rotate.getPosition() - .001);
-
-
+        rotate.setPosition(rotate.getPosition() - .01);
     }
     public void rotateClawL() {
-            rotate.setPosition(rotate.getPosition() + .001);
+            rotate.setPosition(rotate.getPosition() + .01);
         }
 
     @Override
@@ -225,7 +222,7 @@ public class TeleOp2024 extends LinearOpMode {
                             case 1:
                                 //move lift
                                 if (time.seconds() > 1) {
-                                    liftController.setTarget(1100);
+                                    liftController.setTarget(1100-1200);
                                     time.reset();
                                     subState++;
 
@@ -269,19 +266,19 @@ public class TeleOp2024 extends LinearOpMode {
 
                 case FLOOR_GRAB:
 
-                    liftController.setTarget(0);
+                    liftController.setTarget(0-1200);
                     slideController.setTarget(0);
                     //grab.setPosition(0);
-                    rotate.setPosition(0);
+                    //rotate.setPosition(0);
 
                     if (grabbing) {
-                        elbow1.setPosition(0.6);
-                        elbow2.setPosition(0.6);
-                        wrist.setPosition(0);
+                        elbow1.setPosition(0.5);
+                        elbow2.setPosition(0.5);
+                        wrist.setPosition(1);
                     } else {
-                        elbow1.setPosition(0.7); // hover
-                        elbow2.setPosition(0.7);
-                        wrist.setPosition(0.1);
+                        elbow1.setPosition(0.575); // hover
+                        elbow2.setPosition(0.575);
+                        wrist.setPosition(1);
                     }
                     if(!subStateDone){
                         time.reset();
@@ -297,7 +294,7 @@ public class TeleOp2024 extends LinearOpMode {
                             case 0:
                                 //reset slide
                                 slideController.setTarget(0);
-                                liftController.setTarget(1150);
+                                liftController.setTarget(1150-1200);
                                 time.reset();
                                 subState++;
                                 break;
@@ -315,8 +312,8 @@ public class TeleOp2024 extends LinearOpMode {
                             case 2:
                                 //move elbow
                                 if (time.seconds() > 1) {
-                                    elbow1.setPosition(.96);
-                                    elbow2.setPosition(.96);
+                                    elbow1.setPosition(.99);
+                                    elbow2.setPosition(.99);
                                     time.reset();
                                     subState ++;
                                     break;
@@ -325,7 +322,7 @@ public class TeleOp2024 extends LinearOpMode {
                             case 3:
                                 //move wrist
                                 if (time.seconds() > 1) {
-                                    wrist.setPosition(0.35);
+                                    wrist.setPosition(0.575);
                                     rotate.setPosition(0);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
@@ -349,7 +346,7 @@ public class TeleOp2024 extends LinearOpMode {
                         switch (subState){
                             case 0:
                                 slideController.setTarget(0);
-                                liftController.setTarget(1100);
+                                liftController.setTarget(1100-1200);
                                 time.reset();
                                 subState++;
                                 break;
@@ -357,8 +354,7 @@ public class TeleOp2024 extends LinearOpMode {
 
                             case 1:
                                 if (time.seconds() > 1) {
-                                    wrist.setPosition(0);
-
+                                    wrist.setPosition(1);
 
 
                                     time.reset();
@@ -395,7 +391,7 @@ public class TeleOp2024 extends LinearOpMode {
                         switch (subState){
                             case 0:
                                 slideController.setTarget(-85);
-                                liftController.setTarget(1150);
+                                liftController.setTarget(1150-1200);
                                 time.reset();
                                 subState++;
                                 break;
@@ -403,15 +399,15 @@ public class TeleOp2024 extends LinearOpMode {
 
                             case 1:
                                 if(time.seconds() > 1){
-                                    wrist.setPosition(0.6);
+                                    wrist.setPosition(0.4);
                                     time.reset();
                                     subState++;
                                     break;
                                 }
                             case 2:
                                 if (time.seconds() > 1) {
-                                    elbow1.setPosition(0.3);
-                                    elbow2.setPosition(0.3);
+                                    elbow1.setPosition(0.2);
+                                    elbow2.setPosition(0.2);
 
                                     time.reset();
                                     subState = 0;
@@ -440,7 +436,7 @@ public class TeleOp2024 extends LinearOpMode {
                     if(!subStateDone){
                         switch (subState){
                             case 0:
-                                liftController.setTarget(1150);
+                                liftController.setTarget(1150-1200);
                                 time.reset();
                                 subState++;
                                 break;
@@ -448,15 +444,15 @@ public class TeleOp2024 extends LinearOpMode {
 
                             case 1:
                                 if (time.seconds() > 1) {
-                                    elbow1.setPosition(0.6); // sgrab
-                                    elbow2.setPosition(0.6);
+                                    elbow1.setPosition(0.5); // sgrab
+                                    elbow2.setPosition(0.5);
                                     time.reset();
                                     subState ++;
                                 }
                                 break;
                             case 2:
                                 if (time.seconds() > 1) {
-                                    wrist.setPosition(1);
+                                    wrist.setPosition(0);
                                     rotate.setPosition(0.35);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
@@ -482,7 +478,7 @@ public class TeleOp2024 extends LinearOpMode {
                     if(!subStateDone){
                         switch (subState){
                             case 0:
-                                liftController.setTarget(1300);
+                                liftController.setTarget(1300-1200);
                                 time.reset();
                                 subState++;
                                 break;
