@@ -6,6 +6,9 @@ import android.telephony.AccessNetworkConstants;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -47,6 +50,7 @@ public class TeleOp2024 extends LinearOpMode {
     private int lastPos = 0;
 
     private boolean grabbing = false;
+    private boolean clawClosed = false;
 
     private int lastSlidePos = 0;
     private boolean isDropping = false;
@@ -66,13 +70,18 @@ public class TeleOp2024 extends LinearOpMode {
     public int subState = 0;
     private boolean subStateDone = false;
 
+    private Limelight3A limelight;
+    private int[] pipelines = {0,1,2};
+    private int pipelineIndex = 0;
+    public static double offset = 0.2;
+
     public enum RobotState {
         FLOOR_GRAB,
         SPECIMEN_GRAB,
         SPECIMEN_TRANSITION,
         SPECIMEN_DROP,
         HIGH_BASKET,
-        LOW_BASKET,
+        SPEC_SCORE,
         NEUTRAL,
     }
 
@@ -123,6 +132,10 @@ public class TeleOp2024 extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(10);
+        limelight.pipelineSwitch(0);
+        telemetry.setMsTransmissionInterval(11);
 
 
         leftFront = hardwareMap.get(DcMotor.class, "leftFront");
@@ -154,6 +167,7 @@ public class TeleOp2024 extends LinearOpMode {
 
         grab = hardwareMap.get(Servo.class, "grab");
         rotate = hardwareMap.get(Servo.class, "rotate");
+        rotate.setDirection(Servo.Direction.REVERSE);
         elbow1 = hardwareMap.get(ServoImplEx.class, "elbow1");
         elbow1.setDirection(Servo.Direction.REVERSE);
         elbow2 = hardwareMap.get(ServoImplEx.class, "elbow2");
@@ -175,9 +189,11 @@ public class TeleOp2024 extends LinearOpMode {
 
         waitForStart();
         stateStartTime = System.currentTimeMillis();
+        limelight.start();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            LLResult result = limelight.getLatestResult();
             //armControl.moveLiftTo(2400);
 //
 //            if (!positionSet && lift1.getCurrentPosition() > 250) {
@@ -265,21 +281,25 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                 case FLOOR_GRAB:
+                    if(slide1.getCurrentPosition()<200){
+                        liftController.setTarget(0-1200);
+                        slideController.setTarget(0);
+                        //grab.setPosition(0);
+                        //rotate.setPosition(0);
 
-                    liftController.setTarget(0-1200);
-                    slideController.setTarget(0);
-                    //grab.setPosition(0);
-                    //rotate.setPosition(0);
 
+                    }
                     if (grabbing) {
                         elbow1.setPosition(0.5);
                         elbow2.setPosition(0.5);
                         wrist.setPosition(1);
                     } else {
-                        elbow1.setPosition(0.575); // hover
-                        elbow2.setPosition(0.575);
+
+                        elbow1.setPosition(0.6); // hover
+                        elbow2.setPosition(0.6);
                         wrist.setPosition(1);
                     }
+
                     if(!subStateDone){
                         time.reset();
                         subState = 0;
@@ -302,28 +322,21 @@ public class TeleOp2024 extends LinearOpMode {
 
                             case 1:
                                 //move lift
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .2) {
                                     slideController.setTarget(-80);
                                     time.reset();
                                     subState++;
                                     break;
                                 }
                                 break;
+
                             case 2:
-                                //move elbow
-                                if (time.seconds() > 1) {
+                                //move wrist
+                                if (time.seconds() > .25) {
                                     elbow1.setPosition(.99);
                                     elbow2.setPosition(.99);
-                                    time.reset();
-                                    subState ++;
-                                    break;
-                                }
-                                break;
-                            case 3:
-                                //move wrist
-                                if (time.seconds() > 1) {
-                                    wrist.setPosition(0.575);
-                                    rotate.setPosition(0);
+                                    wrist.setPosition(0.53);
+                                    rotate.setPosition(0.33);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
                                 }
@@ -353,7 +366,7 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .1) {
                                     wrist.setPosition(1);
 
 
@@ -362,17 +375,12 @@ public class TeleOp2024 extends LinearOpMode {
                                 }
                                 break;
                             case 2:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .8) {
 
-                                    rotate.setPosition(0.65);
-                                    time.reset();
-                                    subState++;
+                                    rotate.setPosition(1);
 
-                                }
-                            case 3:
-                                if(time.seconds() > 1){
-                                    elbow1.setPosition(0.6);
-                                    elbow2.setPosition(0.6);
+                                    elbow1.setPosition(0.5);
+                                    elbow2.setPosition(0.5);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
 
@@ -398,23 +406,28 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if(time.seconds() > 1){
+                                if(time.seconds() > .25){
                                     wrist.setPosition(0.4);
                                     time.reset();
                                     subState++;
                                     break;
                                 }
                             case 2:
-                                if (time.seconds() > 1) {
-                                    elbow1.setPosition(0.2);
-                                    elbow2.setPosition(0.2);
+                                if (time.seconds() > .25) {
+                                    elbow1.setPosition(0.15);
+                                    elbow2.setPosition(0.15);
 
+                                    time.reset();
+                                    subState++;
+                                }
+                                break;
+                            case 3:
+                                if(time.seconds() > .3) {
+                                    grab.setPosition(.4);
                                     time.reset();
                                     subState = 0;
                                     subStateDone = true;
                                 }
-                                break;
-
 
                         }
 
@@ -433,7 +446,7 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                 case HIGH_BASKET:
-                    if(!subStateDone){
+                    if(!subStateDone && slide1.getCurrentPosition()<200){
                         switch (subState){
                             case 0:
                                 liftController.setTarget(1150-1200);
@@ -443,17 +456,12 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                             case 1:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .8) {
                                     elbow1.setPosition(0.5); // sgrab
                                     elbow2.setPosition(0.5);
-                                    time.reset();
-                                    subState ++;
-                                }
-                                break;
-                            case 2:
-                                if (time.seconds() > 1) {
+
                                     wrist.setPosition(0);
-                                    rotate.setPosition(0.35);
+                                    rotate.setPosition(0.65);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
                                 }
@@ -472,20 +480,19 @@ public class TeleOp2024 extends LinearOpMode {
 
                         break;
                     }
-
-
-                case LOW_BASKET:
+                /*
+                case SPEC_SCORE:
                     if(!subStateDone){
                         switch (subState){
                             case 0:
-                                liftController.setTarget(1300-1200);
+                                liftController.setTarget(600-1200);
                                 time.reset();
                                 subState++;
                                 break;
 
                             case 1:
                                 if (time.seconds() > 1) {
-                                    slideController.setTarget(1000);
+                                    slideController.setTarget(150);
                                     time.reset();
                                     subState++;
 
@@ -493,8 +500,8 @@ public class TeleOp2024 extends LinearOpMode {
                                 break;
                             case 2:
                                 if (time.seconds() > 1) {
-                                    elbow1.setPosition(0.7); // sgrab
-                                    elbow2.setPosition(0.7);
+                                    elbow1.setPosition(0.4); // sgrab
+                                    elbow2.setPosition(0.);
                                     time.reset();
                                     subState ++;
                                 }
@@ -511,7 +518,7 @@ public class TeleOp2024 extends LinearOpMode {
 
                         }
 
-                    /*
+
                     liftController.setTarget(1300);
                     slideController.setTarget(1000);
                     //grab.setPosition(0.75);
@@ -520,12 +527,23 @@ public class TeleOp2024 extends LinearOpMode {
                     wrist.setPosition(1);
                     rotate.setPosition(0.35);
                     break;
-                    */
+
                     break;
                     }
 
-        }
+                 */
 
+        }
+            if(robotState == RobotState.FLOOR_GRAB&&!grabbing){
+                if (result != null && !clawClosed) {
+
+                    double[] outputs = result.getPythonOutput();
+
+                    telemetry.addData("Angle", outputs[5]);
+                    rotate.setPosition((outputs[5]/180)+offset);
+                    telemetry.addData("Valid", result.isValid());
+                }
+            }
             if (armGamepad.dpad_down) {
                 robotState = RobotState.FLOOR_GRAB;
                 subStateDone = false;
@@ -551,20 +569,27 @@ public class TeleOp2024 extends LinearOpMode {
 
 
             if (armGamepad.triangle) {
+                clawClosed = false;
                 grab.setPosition(0.4);
             }
 
             if (armGamepad.cross) {
+                clawClosed = true;
                 grab.setPosition(0.75);
             }
 
             if (armGamepad.square) {
-                rotateClawL();
+                offset+=0.01;
             }
 
             if (armGamepad.circle) {
 
-                rotateClawR();
+                offset-=0.01;
+            }
+
+            if(currArmGamepad.dpad_right&&!prevArmGamepad.dpad_right){
+                pipelineIndex++;
+                limelight.pipelineSwitch(pipelines[pipelineIndex%3]);
             }
 //
             if (armGamepad.left_stick_button) {
@@ -574,7 +599,7 @@ public class TeleOp2024 extends LinearOpMode {
             }
 
 
-            if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 3000) {
+            if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2500) {
                 double slidePower = armGamepad.left_trigger;
                 slide1.setPower(slidePower);
                 slide2.setPower(slidePower);
@@ -588,13 +613,23 @@ public class TeleOp2024 extends LinearOpMode {
             }
 
             liftController.update();
+            LLStatus status = limelight.getStatus();
+            if(status.getPipelineIndex() == 0) telemetry.addData("COLOR", "RED");
+        else if(status.getPipelineIndex()==1) telemetry.addData("COLOR", "YELLOW");
+        else telemetry.addData("COLOR","BLUE");
+            telemetry.addData("Name", "%s",
+                    status.getName());
+            telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
+                    status.getTemp(), status.getCpu(),(int)status.getFps());
+            telemetry.addData("Pipeline", "Index: %d, Type: %s",
+                    status.getPipelineIndex(), status.getPipelineType());
         telemetry.addData("State", robotState);
         telemetry.addData("subState", subState);
         telemetry.addData("time", time.seconds());
         telemetry.addData("Is Resetting?", resetting);
         telemetry.addData("Lift Position", lastPos);
         telemetry.addData("Target", target);
-        telemetry.addData("rotate index", rotateIndex);
+
         telemetry.update();
     }
     }
