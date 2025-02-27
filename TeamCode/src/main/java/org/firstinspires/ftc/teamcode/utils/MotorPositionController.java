@@ -40,7 +40,7 @@ public class MotorPositionController {
     }
 
     public boolean isBusy() {
-        return Math.abs(target - motor1.getCurrentPosition()) > 20;
+        return Math.abs(target - motor1.getCurrentPosition()) > 50;
     }
     public double getMotorPower1() { return motorPower1; }
 

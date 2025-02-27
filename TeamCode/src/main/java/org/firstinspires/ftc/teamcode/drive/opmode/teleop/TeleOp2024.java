@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.teleop;
 
 
+import static com.pedropathing.follower.FollowerConstants.headingPIDFFeedForward;
+
 import android.telephony.AccessNetworkConstants;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -9,6 +11,16 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.pedropathing.follower.DriveVectorScaler;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.MathFunctions;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.pathgen.Vector;
+import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,18 +32,29 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
 import org.firstinspires.ftc.teamcode.utils.MotorSyncController;
+import org.opencv.core.Mat;
+//import org.firstinspires.ftc.teamcode.utils.PIDController;
+//import org.firstinspires.ftc.teamcode.utils.PIDFController;
+import com.pedropathing.util.PIDFController;
+import com.pedropathing.follower.FollowerConstants;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Config
 @TeleOp(name = "MAIN", group = "Linear Opmode")
 public class TeleOp2024 extends LinearOpMode {
 
     private DcMotor leftFront = null;
-    private DcMotor rightFront = null;
-    private DcMotor leftRear = null;
+    private DcMotorEx rightFront = null;
+    private DcMotorEx leftRear = null;
     //private DcMotor revArm = null;
-    private DcMotor rightRear = null;
+    private DcMotorEx rightRear = null;
+    private List<DcMotorEx> motors;
     private DcMotorEx lift = null;
     private DcMotorEx slide1 = null;
     private DcMotorEx slide2 = null;
@@ -58,6 +81,17 @@ public class TeleOp2024 extends LinearOpMode {
     private double[] rotatePositions = {.055,.222, .555,.888};
 
     private MotorPositionController liftController, slideController;
+//    private PIDFController angleController;
+    private PIDFController headingPIDF;
+    private DriveVectorScaler driveVectorScaler;
+
+    private Follower follower;
+
+    private final Pose startPose = new Pose(0,0,0);
+
+    public static double targetHeading = 0;
+    public static boolean movementLocked = false;
+
     public int target = 0;
     private final double ticks = 384.5;
 
@@ -69,6 +103,7 @@ public class TeleOp2024 extends LinearOpMode {
     ElapsedTime time = new ElapsedTime();
     public int subState = 0;
     private boolean subStateDone = false;
+    private double headingError;
 
     private Limelight3A limelight;
     private int[] pipelines = {0,1,2};
@@ -87,25 +122,41 @@ public class TeleOp2024 extends LinearOpMode {
 
     public static RobotState robotState = RobotState.FLOOR_GRAB;
 
+//    public double getAbsoluteAngle() {
+//        double totalAngle = follower.getTotalHeading();
+//        follower.getCorrectiveVector().getTheta();
+//    }
+private double getHeadingCorrectionPower() {
+    headingError = MathFunctions.getTurnDirection(follower.getPose().getHeading(), Math.toRadians(targetHeading)) * MathFunctions.getSmallestAngleDifference(follower.getPose().getHeading(), Math.toRadians(targetHeading));
+    headingPIDF.updateError(-headingError);
+    return MathFunctions.clamp(headingPIDF.runPIDF() + headingPIDFFeedForward * MathFunctions.getTurnDirection(follower.getPose().getHeading(), Math.toRadians(targetHeading)), -driveVectorScaler.getMaxPowerScaling(), driveVectorScaler.getMaxPowerScaling());
+}
+
     public void movement() {
-        double modifier = 1;//nearBoard ? 0.65 : 1;
-        double Lpower = 1*modifier;
-        double Rpower = .517; //0.52*modifier;//*modifier;
-        boolean reverseStick = true;
+        if (movementLocked) {
+            //targetHeading += driveGamepad.left_stick_x * 5;
+            follower.setTeleOpMovementVectors(driveGamepad.right_stick_y*.517, driveGamepad.right_stick_x*.517, getHeadingCorrectionPower() * FollowerConstants.holdPointHeadingScaling, true);
+            follower.update();
+        } else {
+            double modifier = 1;//nearBoard ? 0.65 : 1;
+            double Lpower = 1*modifier;
+            double Rpower = .517; //0.52*modifier;//*modifier;
+            boolean reverseStick = true;
 
-        double r = Lpower * Math.hypot((!reverseStick) ? driveGamepad.left_stick_x : driveGamepad.right_stick_x, (!reverseStick) ? -driveGamepad.left_stick_y : -driveGamepad.right_stick_y);
-        double robotAngle = Math.atan2((!reverseStick) ? -driveGamepad.left_stick_y : -driveGamepad.right_stick_y, (!reverseStick) ? driveGamepad.left_stick_x : driveGamepad.right_stick_x) + 3 * Math.PI / 4;
-        double rightX = Rpower * ((!reverseStick) ? driveGamepad.right_stick_x : driveGamepad.left_stick_x) * 1;
-        double rightY = Rpower * ((!reverseStick) ? driveGamepad.right_stick_y : driveGamepad.left_stick_y) * 1;
-        double v1 = r * Math.cos(robotAngle) - rightX + rightY;
-        double v2 = r * Math.sin(robotAngle) + rightX + rightY;
-        double v3 = r * Math.sin(robotAngle) - rightX + rightY;
-        double v4 = r * Math.cos(robotAngle) + rightX + rightY;
+            double r = Lpower * Math.hypot((!reverseStick) ? driveGamepad.left_stick_x : driveGamepad.right_stick_x, (!reverseStick) ? -driveGamepad.left_stick_y : -driveGamepad.right_stick_y);
+            double robotAngle = Math.atan2((!reverseStick) ? -driveGamepad.left_stick_y : -driveGamepad.right_stick_y, (!reverseStick) ? driveGamepad.left_stick_x : driveGamepad.right_stick_x) + 3 * Math.PI / 4;
+            double rightX = Rpower * ((!reverseStick) ? driveGamepad.right_stick_x : driveGamepad.left_stick_x) * 1;
+            double rightY = Rpower * ((!reverseStick) ? driveGamepad.right_stick_y : driveGamepad.left_stick_y) * 1;
+            double v1 = r * Math.cos(robotAngle) - rightX + rightY;
+            double v2 = r * Math.sin(robotAngle) + rightX + rightY;
+            double v3 = r * Math.sin(robotAngle) - rightX + rightY;
+            double v4 = r * Math.cos(robotAngle) + rightX + rightY;
 
-        leftFront.setPower(v1);
-        rightFront.setPower(v2);
-        leftRear.setPower(v3);
-        rightRear.setPower(v4);
+            leftFront.setPower(v1);
+            rightFront.setPower(v2);
+            leftRear.setPower(v3);
+            rightRear.setPower(v4);
+        }
     }
 
 
@@ -138,16 +189,14 @@ public class TeleOp2024 extends LinearOpMode {
         telemetry.setMsTransmissionInterval(11);
 
 
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-
-        leftRear = hardwareMap.get(DcMotor.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotor.class, "rightRear");
-
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+        rightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         lift = hardwareMap.get(DcMotorEx.class, "lift");
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -186,6 +235,17 @@ public class TeleOp2024 extends LinearOpMode {
         liftController = new MotorPositionController(lift, null,0.002, 0, 0.0003, 0.1, 384.5, 0);
         slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
 
+//        angleController = new PIDController(angleP, 0, angleD);
+
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+        follower.setStartingPose(startPose);
+
+        driveVectorScaler = new DriveVectorScaler(FollowerConstants.frontLeftVector);
+
+        headingPIDF = new PIDFController(FollowerConstants.headingPIDFCoefficients);
+
+        follower.startTeleopDrive();
 
         waitForStart();
         stateStartTime = System.currentTimeMillis();
@@ -194,13 +254,7 @@ public class TeleOp2024 extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             LLResult result = limelight.getLatestResult();
-            //armControl.moveLiftTo(2400);
-//
-//            if (!positionSet && lift1.getCurrentPosition() > 250) {
-//                positionSet = true;
-//                armPositionIdle();
-//            }
-//
+
             movement();
 //
             armGamepad = gamepad2.getGamepadId() == -1 ? gamepad1 : gamepad2;
@@ -212,17 +266,6 @@ public class TeleOp2024 extends LinearOpMode {
             currDriveGamepad.copy(driveGamepad);
 
 
-//            if (armGamepad.left_trigger > 0) {
-//                liftUp(armGamepad.left_trigger);
-//                lastPos = lift.getCurrentPosition();
-//            } else if (armGamepad.right_trigger > 0) {
-//                liftDown(armGamepad.right_trigger);
-//                lastPos = lift.getCurrentPosition();
-//            } else {
-//                liftController.setTarget(lastPos);
-//                liftController.update();
-//            }
-//
             switch (robotState) {
 
                 case NEUTRAL:
@@ -587,15 +630,19 @@ public class TeleOp2024 extends LinearOpMode {
                 offset-=0.01;
             }
 
-            if(currArmGamepad.dpad_right&&!prevArmGamepad.dpad_right){
+            if (currArmGamepad.dpad_right&&!prevArmGamepad.dpad_right) {
                 pipelineIndex++;
                 limelight.pipelineSwitch(pipelines[pipelineIndex%3]);
             }
-//
+
             if (armGamepad.left_stick_button) {
                 grabbing = true;
             } else if (armGamepad.right_stick_button) {
                 grabbing = false;
+            }
+
+            if (driveGamepad.touchpad) {
+                movementLocked = !movementLocked;
             }
 
 
@@ -615,20 +662,22 @@ public class TeleOp2024 extends LinearOpMode {
             liftController.update();
             LLStatus status = limelight.getStatus();
             if(status.getPipelineIndex() == 0) telemetry.addData("COLOR", "RED");
-        else if(status.getPipelineIndex()==1) telemetry.addData("COLOR", "YELLOW");
-        else telemetry.addData("COLOR","BLUE");
-            telemetry.addData("Name", "%s",
-                    status.getName());
-            telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
-                    status.getTemp(), status.getCpu(),(int)status.getFps());
-            telemetry.addData("Pipeline", "Index: %d, Type: %s",
-                    status.getPipelineIndex(), status.getPipelineType());
+            else if(status.getPipelineIndex()==1) telemetry.addData("COLOR", "YELLOW");
+            else telemetry.addData("COLOR","BLUE");
+
+            telemetry.addData("Name", "%s", status.getName());
+            telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d", status.getTemp(), status.getCpu(),(int)status.getFps());
+            telemetry.addData("Pipeline", "Index: %d, Type: %s", status.getPipelineIndex(), status.getPipelineType());
+
         telemetry.addData("State", robotState);
         telemetry.addData("subState", subState);
         telemetry.addData("time", time.seconds());
         telemetry.addData("Is Resetting?", resetting);
         telemetry.addData("Lift Position", lastPos);
         telemetry.addData("Target", target);
+        telemetry.addData("rotate index", rotateIndex);
+        telemetry.addData("headingError", headingError);
+        telemetry.addData("angle", follower.getTotalHeading());
 
         telemetry.update();
     }
