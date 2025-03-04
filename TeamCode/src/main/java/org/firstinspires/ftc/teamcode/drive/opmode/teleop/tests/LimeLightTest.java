@@ -109,7 +109,7 @@ public class LimeLightTest extends LinearOpMode {
         slide2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slide2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
+
 
         grab = hardwareMap.get(Servo.class, "grab");
         rotate = hardwareMap.get(Servo.class, "rotate");

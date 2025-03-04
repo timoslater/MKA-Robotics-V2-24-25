@@ -110,6 +110,8 @@ public class TeleOp2024 extends LinearOpMode {
     private int pipelineIndex = 0;
     public static double offset = 0.2;
 
+    private Servo light;
+
     public enum RobotState {
         FLOOR_GRAB,
         SPECIMEN_GRAB,
@@ -222,6 +224,8 @@ private double getHeadingCorrectionPower() {
         elbow2 = hardwareMap.get(ServoImplEx.class, "elbow2");
         wrist = hardwareMap.get(Servo.class, "wrist");
 
+        light = hardwareMap.get(Servo.class, "light");
+
 //        //AsyncArmActions armControl = new AsyncArmActions(0.25, this);
         Gamepad currDriveGamepad = new Gamepad();
         Gamepad currArmGamepad = new Gamepad();
@@ -333,13 +337,13 @@ private double getHeadingCorrectionPower() {
 
                     }
                     if (grabbing) {
-                        elbow1.setPosition(0.5);
-                        elbow2.setPosition(0.5);
+                        elbow1.setPosition(0.485);
+                        elbow2.setPosition(0.485);
                         wrist.setPosition(1);
                     } else {
 
-                        elbow1.setPosition(0.6); // hover
-                        elbow2.setPosition(0.6);
+                        elbow1.setPosition(0.585); // hover
+                        elbow2.setPosition(0.585);
                         wrist.setPosition(1);
                     }
 
@@ -378,8 +382,8 @@ private double getHeadingCorrectionPower() {
                                 if (time.seconds() > .25) {
                                     elbow1.setPosition(.99);
                                     elbow2.setPosition(.99);
-                                    wrist.setPosition(0.53);
-                                    rotate.setPosition(0.33);
+                                    wrist.setPosition(0.6);
+                                    rotate.setPosition(1);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
                                 }
@@ -403,27 +407,18 @@ private double getHeadingCorrectionPower() {
                             case 0:
                                 slideController.setTarget(0);
                                 liftController.setTarget(1100-1200);
+                                wrist.setPosition(1);
                                 time.reset();
                                 subState++;
                                 break;
-
-
                             case 1:
-                                if (time.seconds() > .1) {
-                                    wrist.setPosition(1);
+                                if (time.seconds() > 1) {
 
+                                    rotate.setPosition(.34);
 
-                                    time.reset();
-                                    subState ++;
-                                }
-                                break;
-                            case 2:
-                                if (time.seconds() > .8) {
-
-                                    rotate.setPosition(1);
-
-                                    elbow1.setPosition(0.5);
-                                    elbow2.setPosition(0.5);
+                                    elbow1.setPosition(0.3);
+                                    elbow2.setPosition(0.3);
+                                    wrist.setPosition(0.4);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
 
@@ -441,36 +436,17 @@ private double getHeadingCorrectionPower() {
                     if(!subStateDone){
                         switch (subState){
                             case 0:
-                                slideController.setTarget(-85);
-                                liftController.setTarget(1150-1200);
+
+                                elbow1.setPosition(0.12);
+                                elbow2.setPosition(0.12);
+
+
                                 time.reset();
-                                subState++;
+                                subState = 0;
+                                subStateDone = true;
                                 break;
 
 
-                            case 1:
-                                if(time.seconds() > .25){
-                                    wrist.setPosition(0.4);
-                                    time.reset();
-                                    subState++;
-                                    break;
-                                }
-                            case 2:
-                                if (time.seconds() > .25) {
-                                    elbow1.setPosition(0.15);
-                                    elbow2.setPosition(0.15);
-
-                                    time.reset();
-                                    subState++;
-                                }
-                                break;
-                            case 3:
-                                if(time.seconds() > .3) {
-                                    grab.setPosition(.4);
-                                    time.reset();
-                                    subState = 0;
-                                    subStateDone = true;
-                                }
 
                         }
 
@@ -645,25 +621,50 @@ private double getHeadingCorrectionPower() {
                 movementLocked = !movementLocked;
             }
 
-
-            if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2500) {
-                double slidePower = armGamepad.left_trigger;
-                slide1.setPower(slidePower);
-                slide2.setPower(slidePower);
-            } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
-                double slidePower = armGamepad.right_trigger;
-                slide1.setPower(-slidePower);
-                slide2.setPower(-slidePower);
-            } else {
-                slideController.setTarget(slide1.getCurrentPosition());
-                slideController.update();
+            if(robotState == RobotState.FLOOR_GRAB){
+                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 1800) {
+                    double slidePower = armGamepad.left_trigger;
+                    slide1.setPower(slidePower);
+                    slide2.setPower(slidePower);
+                } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
+                    double slidePower = armGamepad.right_trigger;
+                    slide1.setPower(-slidePower);
+                    slide2.setPower(-slidePower);
+                } else {
+                    slideController.setTarget(slide1.getCurrentPosition());
+                    slideController.update();
+                }
             }
+            else{
+                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2300) {
+                    double slidePower = armGamepad.left_trigger;
+                    slide1.setPower(slidePower);
+                    slide2.setPower(slidePower);
+                } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
+                    double slidePower = armGamepad.right_trigger;
+                    slide1.setPower(-slidePower);
+                    slide2.setPower(-slidePower);
+                } else {
+                    slideController.setTarget(slide1.getCurrentPosition());
+                    slideController.update();
+                }
+            }
+
 
             liftController.update();
             LLStatus status = limelight.getStatus();
-            if(status.getPipelineIndex() == 0) telemetry.addData("COLOR", "RED");
-            else if(status.getPipelineIndex()==1) telemetry.addData("COLOR", "YELLOW");
-            else telemetry.addData("COLOR","BLUE");
+            if(status.getPipelineIndex() == 0) {
+                light.setPosition(0.28);
+                telemetry.addData("COLOR", "RED");
+            }
+            else if(status.getPipelineIndex()==1) {
+                light.setPosition(0.388);
+                telemetry.addData("COLOR", "YELLOW");
+            }
+            else {
+                light.setPosition(0.611);
+                telemetry.addData("COLOR","BLUE");
+            }
 
             telemetry.addData("Name", "%s", status.getName());
             telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d", status.getTemp(), status.getCpu(),(int)status.getFps());
