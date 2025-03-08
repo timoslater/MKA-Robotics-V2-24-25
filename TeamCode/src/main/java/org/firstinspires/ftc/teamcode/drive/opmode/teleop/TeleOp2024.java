@@ -236,7 +236,7 @@ private double getHeadingCorrectionPower() {
         driveGamepad = gamepad1;
         armGamepad = gamepad1;
 
-        liftController = new MotorPositionController(lift, null,0.002, 0, 0.0003, 0.1, 384.5, 0);
+        liftController = new MotorPositionController(lift, null,0.004, 0, 0.0004, 0.1, 1425.1, 0);
         slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
 
 //        angleController = new PIDController(angleP, 0, angleD);
@@ -285,7 +285,7 @@ private double getHeadingCorrectionPower() {
                             case 1:
                                 //move lift
                                 if (time.seconds() > 1) {
-                                    liftController.setTarget(1100-1200);
+                                    liftController.setTarget(-50);
                                     time.reset();
                                     subState++;
 
@@ -329,7 +329,7 @@ private double getHeadingCorrectionPower() {
 
                 case FLOOR_GRAB:
                     if(slide1.getCurrentPosition()<200){
-                        liftController.setTarget(0-1200);
+                        liftController.setTarget(-1660);
                         slideController.setTarget(0);
                         //grab.setPosition(0);
                         //rotate.setPosition(0);
@@ -337,13 +337,13 @@ private double getHeadingCorrectionPower() {
 
                     }
                     if (grabbing) {
-                        elbow1.setPosition(0.485);
-                        elbow2.setPosition(0.485);
+                        elbow1.setPosition(0.48);
+                        elbow2.setPosition(0.48);
                         wrist.setPosition(1);
                     } else {
 
-                        elbow1.setPosition(0.585); // hover
-                        elbow2.setPosition(0.585);
+                        elbow1.setPosition(0.6); // hover
+                        elbow2.setPosition(0.6);
                         wrist.setPosition(1);
                     }
 
@@ -361,7 +361,7 @@ private double getHeadingCorrectionPower() {
                             case 0:
                                 //reset slide
                                 slideController.setTarget(0);
-                                liftController.setTarget(1150-1200);
+                                liftController.setTarget(-50);
                                 time.reset();
                                 subState++;
                                 break;
@@ -382,7 +382,7 @@ private double getHeadingCorrectionPower() {
                                 if (time.seconds() > .25) {
                                     elbow1.setPosition(.99);
                                     elbow2.setPosition(.99);
-                                    wrist.setPosition(0.6);
+                                    wrist.setPosition(0.68);
                                     rotate.setPosition(1);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
@@ -406,7 +406,7 @@ private double getHeadingCorrectionPower() {
                         switch (subState){
                             case 0:
                                 slideController.setTarget(0);
-                                liftController.setTarget(1100-1200);
+                                liftController.setTarget(-50);
                                 wrist.setPosition(1);
                                 time.reset();
                                 subState++;
@@ -468,23 +468,19 @@ private double getHeadingCorrectionPower() {
                     if(!subStateDone && slide1.getCurrentPosition()<200){
                         switch (subState){
                             case 0:
-                                liftController.setTarget(1150-1200);
+                                liftController.setTarget(-50);
+                                elbow1.setPosition(0.5); // sgrab
+                                elbow2.setPosition(0.5);
+
+                                wrist.setPosition(0.2);
+                                rotate.setPosition(0.65);
                                 time.reset();
-                                subState++;
+                                subState = 0; // Reset subState for next cycle
+                                subStateDone = true;
                                 break;
 
 
-                            case 1:
-                                if (time.seconds() > .8) {
-                                    elbow1.setPosition(0.5); // sgrab
-                                    elbow2.setPosition(0.5);
 
-                                    wrist.setPosition(0);
-                                    rotate.setPosition(0.65);
-                                    subState = 0; // Reset subState for next cycle
-                                    subStateDone = true;
-                                }
-                                break;
 
                         }
                     /*
@@ -596,7 +592,7 @@ private double getHeadingCorrectionPower() {
                 clawClosed = true;
                 grab.setPosition(0.75);
             }
-
+            /*
             if (armGamepad.square) {
                 offset+=0.01;
             }
@@ -605,7 +601,7 @@ private double getHeadingCorrectionPower() {
 
                 offset-=0.01;
             }
-
+            */
             if (currArmGamepad.dpad_right&&!prevArmGamepad.dpad_right) {
                 pipelineIndex++;
                 limelight.pipelineSwitch(pipelines[pipelineIndex%3]);
@@ -620,6 +616,8 @@ private double getHeadingCorrectionPower() {
             if (driveGamepad.touchpad) {
                 movementLocked = !movementLocked;
             }
+
+
 
             if(robotState == RobotState.FLOOR_GRAB){
                 if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 1800) {
@@ -649,8 +647,11 @@ private double getHeadingCorrectionPower() {
                     slideController.update();
                 }
             }
-
-
+            /*
+            if(robotState != RobotState.FLOOR_GRAB){
+                light.setPosition(Math.random()*0.443 + 0.279);
+            }
+            */
             liftController.update();
             LLStatus status = limelight.getStatus();
             if(status.getPipelineIndex() == 0) {

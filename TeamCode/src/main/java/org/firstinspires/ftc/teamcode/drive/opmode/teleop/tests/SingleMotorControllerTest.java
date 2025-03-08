@@ -18,7 +18,7 @@ public class SingleMotorControllerTest extends LinearOpMode {
 
     public static int target = 0;
 
-    public static double ticks = 570; // for 435 rpm motors
+    public static double ticks = 1425.1; // for 435 rpm motors
 
     public static boolean reverse = false;
 
