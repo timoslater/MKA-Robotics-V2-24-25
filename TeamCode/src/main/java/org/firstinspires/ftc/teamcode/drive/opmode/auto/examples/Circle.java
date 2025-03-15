@@ -12,7 +12,7 @@ import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 
-import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstantsSpecimen;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 
 /**
@@ -43,7 +43,7 @@ public class Circle extends OpMode {
      */
     @Override
     public void init() {
-        Constants.setConstants(FConstants.class, LConstants.class);
+        Constants.setConstants(FConstantsSpecimen.class, LConstants.class);
         follower = new Follower(hardwareMap);
 
         circle = follower.pathBuilder()

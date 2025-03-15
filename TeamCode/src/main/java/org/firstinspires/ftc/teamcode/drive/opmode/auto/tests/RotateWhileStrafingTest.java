@@ -2,16 +2,14 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto.tests;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
+import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstantsSpecimen;
 import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.BaseAuto;
 
@@ -87,7 +85,7 @@ public class RotateWhileStrafingTest extends BaseAuto {
 
 
 
-        Constants.setConstants(FConstants.class, LConstants.class);
+        Constants.setConstants(FConstantsSpecimen.class, LConstants.class);
         follower = new Follower(hardwareMap);
         follower.setStartingPose(startPose);
         buildPaths();
