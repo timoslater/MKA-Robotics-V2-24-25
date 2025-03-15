@@ -78,7 +78,7 @@ public class TeleOp2024 extends LinearOpMode {
     private int lastSlidePos = 0;
     private boolean isDropping = false;
     private int rotateIndex;
-    private double[] rotatePositions = {.055,.222, .555,.888};
+    private double[] rotatePositions = {0.33,0.5,0.67,0.88};
 
     private MotorPositionController liftController, slideController;
 //    private PIDFController angleController;
@@ -108,7 +108,8 @@ public class TeleOp2024 extends LinearOpMode {
     private Limelight3A limelight;
     private int[] pipelines = {0,1,2};
     private int pipelineIndex = 0;
-    public static double offset = 0.2;
+    public static double offset = 0.15;
+    public static boolean limelightAlign = true;
 
     private Servo light;
 
@@ -171,11 +172,21 @@ private double getHeadingCorrectionPower() {
         slide2.setPower(-1);
     }
     public void rotateClawR() {
-        rotate.setPosition(rotate.getPosition() - .01);
+
+        if(rotateIndex<rotatePositions.length-1) {
+            rotateIndex++;
+            rotate.setPosition(rotatePositions[rotateIndex]);
+        }
+
+
     }
     public void rotateClawL() {
-            rotate.setPosition(rotate.getPosition() + .01);
+        if(rotateIndex>0) {
+            rotateIndex--;
+            rotate.setPosition(rotatePositions[rotateIndex]);
         }
+
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -550,15 +561,29 @@ private double getHeadingCorrectionPower() {
 
         }
             if(robotState == RobotState.FLOOR_GRAB&&!grabbing){
-                if (result != null && !clawClosed) {
+                if(limelightAlign){
+                    if (result != null && !clawClosed) {
 
-                    double[] outputs = result.getPythonOutput();
+                        double[] outputs = result.getPythonOutput();
 
-                    telemetry.addData("Angle", outputs[5]);
-                    rotate.setPosition((outputs[5]/180)+offset);
-                    telemetry.addData("Valid", result.isValid());
+                        telemetry.addData("Angle", outputs[5]);
+                        rotate.setPosition((outputs[5]/180)+offset);
+                        telemetry.addData("Valid", result.isValid());
+                    }
+                }
+                else{
+                    if (currArmGamepad.circle && !prevArmGamepad.circle){
+
+                        rotateClawR();
+                    } else if(currArmGamepad.square && !prevArmGamepad.square){
+                        rotateClawL();
+                    }
                 }
             }
+            if(armGamepad.touchpad){
+                limelightAlign = !limelightAlign;
+            }
+
             if (armGamepad.dpad_down) {
                 robotState = RobotState.FLOOR_GRAB;
                 subStateDone = false;
@@ -620,7 +645,7 @@ private double getHeadingCorrectionPower() {
 
 
             if(robotState == RobotState.FLOOR_GRAB){
-                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 1800) {
+                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 1000) {
                     double slidePower = armGamepad.left_trigger;
                     slide1.setPower(slidePower);
                     slide2.setPower(slidePower);
@@ -634,7 +659,7 @@ private double getHeadingCorrectionPower() {
                 }
             }
             else{
-                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2300) {
+                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2200) {
                     double slidePower = armGamepad.left_trigger;
                     slide1.setPower(slidePower);
                     slide2.setPower(slidePower);
@@ -654,17 +679,22 @@ private double getHeadingCorrectionPower() {
             */
             liftController.update();
             LLStatus status = limelight.getStatus();
-            if(status.getPipelineIndex() == 0) {
-                light.setPosition(0.28);
-                telemetry.addData("COLOR", "RED");
+            if(limelightAlign){
+                if(status.getPipelineIndex() == 0) {
+                    light.setPosition(0.28);
+                    telemetry.addData("COLOR", "RED");
+                }
+                else if(status.getPipelineIndex()==1) {
+                    light.setPosition(0.388);
+                    telemetry.addData("COLOR", "YELLOW");
+                }
+                else {
+                    light.setPosition(0.611);
+                    telemetry.addData("COLOR","BLUE");
+                }
             }
-            else if(status.getPipelineIndex()==1) {
-                light.setPosition(0.388);
-                telemetry.addData("COLOR", "YELLOW");
-            }
-            else {
-                light.setPosition(0.611);
-                telemetry.addData("COLOR","BLUE");
+            else{
+                light.setPosition(1);
             }
 
             telemetry.addData("Name", "%s", status.getName());
