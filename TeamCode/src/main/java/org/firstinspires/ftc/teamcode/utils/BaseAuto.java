@@ -79,7 +79,7 @@ public abstract class BaseAuto extends OpMode {
 
             grab = hardwareMap.get(ServoImplEx.class, "grab");
 
-            liftController = new MotorPositionController(lift, null,0.002, 0, 0.0003, 0.1, 384.5, 0);
+            liftController = new MotorPositionController(lift, null,0.004, 0, 0.0004, 0.1, 1425.1, 0);
             slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
 
         }
@@ -96,7 +96,7 @@ public abstract class BaseAuto extends OpMode {
         public void specimenGrabPosition() {
             elbow1.setPosition(.99);
             elbow2.setPosition(.99);
-            wrist.setPosition(0.575);
+            wrist.setPosition(0.65);
             rotate.setPosition(0);
             openClaw();
         }
@@ -112,14 +112,14 @@ public abstract class BaseAuto extends OpMode {
 
         public void preSpecimenDrop() {
             rotate.setPosition(0.65);
-            elbow1.setPosition(0.6);
-            elbow2.setPosition(0.6);
+            elbow1.setPosition(0.3);
+            elbow2.setPosition(0.3);
             wrist.setPosition(0.4);
         }
 
         public void specimentScore() {
-            elbow1.setPosition(0.2);
-            elbow2.setPosition(0.2);
+            elbow1.setPosition(0.12);
+            elbow2.setPosition(0.12);
         }
 
         public void initPose() {
@@ -130,14 +130,30 @@ public abstract class BaseAuto extends OpMode {
             closeClaw();
         }
 
-        public void highBasketInit() {
+        public void hangPose() {
             elbow1.setPosition(0.5);
             elbow2.setPosition(0.5);
+            wrist.setPosition(0);
+            rotate.setPosition(0);
+        }
+
+        public void hangLockPose() {
+            elbow1.setPosition(0.6);
+            elbow2.setPosition(0.6);
+            wrist.setPosition(0);
+            rotate.setPosition(0);
+        }
+
+        public void highBasketInit() {
+            elbow1.setPosition(0.3);
+            elbow2.setPosition(0.3);
             rotate.setPosition(0.35);
         }
 
         public void highBasketDrop() {
             wrist.setPosition(0);
+            elbow1.setPosition(0.5);
+            elbow2.setPosition(0.5);
         }
 
         public void floorGrabHover() {
@@ -148,9 +164,23 @@ public abstract class BaseAuto extends OpMode {
         }
 
         public void floorGrabDown() {
-            elbow1.setPosition(0.5);
-            elbow2.setPosition(0.5);
+            elbow1.setPosition(0.43);
+            elbow2.setPosition(0.43);
             rotate.setPosition(0.65);
+            wrist.setPosition(1);
+        }
+
+        public void floorGrabDownHorizontal() {
+            elbow1.setPosition(0.485);
+            elbow2.setPosition(0.485);
+            rotate.setPosition(0.35);
+            wrist.setPosition(1);
+        }
+
+        public void floorGrabHoverHorizontal() {
+            elbow1.setPosition(0.575);
+            elbow2.setPosition(0.575);
+            rotate.setPosition(0.35);
             wrist.setPosition(1);
         }
 

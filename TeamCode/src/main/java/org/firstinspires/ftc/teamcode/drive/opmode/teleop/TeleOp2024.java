@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.teleop;
 
 
-import static com.pedropathing.follower.FollowerConstants.headingPIDFFeedForward;
-
-import android.telephony.AccessNetworkConstants;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -11,16 +8,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.pedropathing.follower.DriveVectorScaler;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.follower.FollowerConstants;
-import com.pedropathing.localization.Pose;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.MathFunctions;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
-import com.pedropathing.pathgen.Vector;
-import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -32,17 +19,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.FConstants;
-import org.firstinspires.ftc.teamcode.drive.opmode.auto.constants.LConstants;
 import org.firstinspires.ftc.teamcode.utils.MotorPositionController;
 import org.firstinspires.ftc.teamcode.utils.MotorSyncController;
-import org.opencv.core.Mat;
+import org.firstinspires.ftc.teamcode.utils.ToggleButton;
 //import org.firstinspires.ftc.teamcode.utils.PIDController;
 //import org.firstinspires.ftc.teamcode.utils.PIDFController;
-import com.pedropathing.util.PIDFController;
-import com.pedropathing.follower.FollowerConstants;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -65,6 +47,12 @@ public class TeleOp2024 extends LinearOpMode {
     private boolean resetting = false;
     private Gamepad driveGamepad = null;
     private Gamepad armGamepad = null;
+
+    private ToggleButton recoveryToggle = new ToggleButton();
+    private ToggleButton speedLimitToggle = new ToggleButton();
+    public boolean limited = true;
+
+    public boolean recovering = false;
     private IMU imu;
     private Servo hand;
     private Servo elbow1;
@@ -82,16 +70,6 @@ public class TeleOp2024 extends LinearOpMode {
 
     private MotorPositionController liftController, slideController;
 //    private PIDFController angleController;
-    private PIDFController headingPIDF;
-    private DriveVectorScaler driveVectorScaler;
-
-    private Follower follower;
-
-    private final Pose startPose = new Pose(0,0,0);
-
-    public static double targetHeading = 0;
-    public static boolean movementLocked = false;
-
     public int target = 0;
     private final double ticks = 384.5;
 
@@ -125,25 +103,10 @@ public class TeleOp2024 extends LinearOpMode {
 
     public static RobotState robotState = RobotState.FLOOR_GRAB;
 
-//    public double getAbsoluteAngle() {
-//        double totalAngle = follower.getTotalHeading();
-//        follower.getCorrectiveVector().getTheta();
-//    }
-private double getHeadingCorrectionPower() {
-    headingError = MathFunctions.getTurnDirection(follower.getPose().getHeading(), Math.toRadians(targetHeading)) * MathFunctions.getSmallestAngleDifference(follower.getPose().getHeading(), Math.toRadians(targetHeading));
-    headingPIDF.updateError(-headingError);
-    return MathFunctions.clamp(headingPIDF.runPIDF() + headingPIDFFeedForward * MathFunctions.getTurnDirection(follower.getPose().getHeading(), Math.toRadians(targetHeading)), -driveVectorScaler.getMaxPowerScaling(), driveVectorScaler.getMaxPowerScaling());
-}
-
     public void movement() {
-        if (movementLocked) {
-            //targetHeading += driveGamepad.left_stick_x * 5;
-            follower.setTeleOpMovementVectors(driveGamepad.right_stick_y*.517, driveGamepad.right_stick_x*.517, getHeadingCorrectionPower() * FollowerConstants.holdPointHeadingScaling, true);
-            follower.update();
-        } else {
             double modifier = 1;//nearBoard ? 0.65 : 1;
             double Lpower = 1*modifier;
-            double Rpower = .517; //0.52*modifier;//*modifier;
+            double Rpower = limited ? .517 : 1; //0.52*modifier;//*modifier;
             boolean reverseStick = true;
 
             double r = Lpower * Math.hypot((!reverseStick) ? driveGamepad.left_stick_x : driveGamepad.right_stick_x, (!reverseStick) ? -driveGamepad.left_stick_y : -driveGamepad.right_stick_y);
@@ -159,7 +122,6 @@ private double getHeadingCorrectionPower() {
             rightFront.setPower(v2);
             leftRear.setPower(v3);
             rightRear.setPower(v4);
-        }
     }
 
 
@@ -249,18 +211,6 @@ private double getHeadingCorrectionPower() {
 
         liftController = new MotorPositionController(lift, null,0.004, 0, 0.0004, 0.1, 1425.1, 0);
         slideController = new MotorPositionController(slide1, slide2, new MotorSyncController(0,0,0), 0.015, 0, 0.0005, 0.5, 384.5, 0);
-
-//        angleController = new PIDController(angleP, 0, angleD);
-
-        Constants.setConstants(FConstants.class, LConstants.class);
-        follower = new Follower(hardwareMap);
-        follower.setStartingPose(startPose);
-
-        driveVectorScaler = new DriveVectorScaler(FollowerConstants.frontLeftVector);
-
-        headingPIDF = new PIDFController(FollowerConstants.headingPIDFCoefficients);
-
-        follower.startTeleopDrive();
 
         waitForStart();
         stateStartTime = System.currentTimeMillis();
@@ -617,6 +567,7 @@ private double getHeadingCorrectionPower() {
                 clawClosed = true;
                 grab.setPosition(0.75);
             }
+
             /*
             if (armGamepad.square) {
                 offset+=0.01;
@@ -638,18 +589,14 @@ private double getHeadingCorrectionPower() {
                 grabbing = false;
             }
 
-            if (driveGamepad.touchpad) {
-                movementLocked = !movementLocked;
-            }
-
 
 
             if(robotState == RobotState.FLOOR_GRAB){
-                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 1000) {
+                if (armGamepad.left_trigger > 0 && (slide1.getCurrentPosition() < 1800 || recovering)) {
                     double slidePower = armGamepad.left_trigger;
                     slide1.setPower(slidePower);
                     slide2.setPower(slidePower);
-                } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
+                } else if (armGamepad.right_trigger > 0 && (slide1.getCurrentPosition() > 0 || recovering)) {
                     double slidePower = armGamepad.right_trigger;
                     slide1.setPower(-slidePower);
                     slide2.setPower(-slidePower);
@@ -659,11 +606,11 @@ private double getHeadingCorrectionPower() {
                 }
             }
             else{
-                if (armGamepad.left_trigger > 0 && slide1.getCurrentPosition() < 2200) {
+                if (armGamepad.left_trigger > 0 && (slide1.getCurrentPosition() < 2300 || recovering)) {
                     double slidePower = armGamepad.left_trigger;
                     slide1.setPower(slidePower);
                     slide2.setPower(slidePower);
-                } else if (armGamepad.right_trigger > 0 && slide1.getCurrentPosition() > 0) {
+                } else if (armGamepad.right_trigger > 0 && (slide1.getCurrentPosition() > 0 || recovering)) {
                     double slidePower = armGamepad.right_trigger;
                     slide1.setPower(-slidePower);
                     slide2.setPower(-slidePower);
@@ -677,7 +624,35 @@ private double getHeadingCorrectionPower() {
                 light.setPosition(Math.random()*0.443 + 0.279);
             }
             */
-            liftController.update();
+            if (recovering) {
+                if (driveGamepad.left_trigger > 0) {
+                    lift.setPower(driveGamepad.left_trigger);
+                } else if (driveGamepad.right_trigger > 0) {
+                    lift.setPower(-driveGamepad.right_trigger);
+                } else {
+                    lift.setPower(0);
+                }
+            } else {
+                liftController.update();
+            }
+
+            if (recoveryToggle.getState(new Boolean[] {driveGamepad.left_bumper, driveGamepad.right_bumper, driveGamepad.left_stick_button, driveGamepad.right_stick_button})) {
+                recovering = !recovering;
+
+                lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                slide1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                slide1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                slide2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                slide2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+
+            if (speedLimitToggle.getState(new Boolean[] {driveGamepad.touchpad})) {
+                limited = !limited;
+            }
+
             LLStatus status = limelight.getStatus();
             if(limelightAlign){
                 if(status.getPipelineIndex() == 0) {
@@ -692,6 +667,22 @@ private double getHeadingCorrectionPower() {
                     light.setPosition(0.611);
                     telemetry.addData("COLOR","BLUE");
                 }
+
+            if (recovering) {
+                light.setPosition(0.5);
+                telemetry.addData("COLOR", "GREEN (Recovering)");
+            }
+            else if(status.getPipelineIndex() == 0) {
+                light.setPosition(0.28);
+                telemetry.addData("COLOR", "RED");
+            }
+            else if(status.getPipelineIndex()==1) {
+                light.setPosition(0.388);
+                telemetry.addData("COLOR", "YELLOW");
+            }
+            else if(status.getPipelineIndex()==2){
+                light.setPosition(0.611);
+                telemetry.addData("COLOR","BLUE");
             }
             else{
                 light.setPosition(1);
@@ -709,8 +700,7 @@ private double getHeadingCorrectionPower() {
         telemetry.addData("Target", target);
         telemetry.addData("rotate index", rotateIndex);
         telemetry.addData("headingError", headingError);
-        telemetry.addData("angle", follower.getTotalHeading());
-
+        telemetry.addData("recovering", recovering);
         telemetry.update();
     }
     }
