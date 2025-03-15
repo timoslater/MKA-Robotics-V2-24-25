@@ -66,7 +66,7 @@ public class TeleOp2024 extends LinearOpMode {
     private int lastSlidePos = 0;
     private boolean isDropping = false;
     private int rotateIndex;
-    private double[] rotatePositions = {0.33,0.5,0.67,0.88};
+    private double[] rotatePositions = {0.23,0.39,0.52,0.65};
 
     private MotorPositionController liftController, slideController;
 //    private PIDFController angleController;
@@ -191,7 +191,6 @@ public class TeleOp2024 extends LinearOpMode {
 
         grab = hardwareMap.get(Servo.class, "grab");
         rotate = hardwareMap.get(Servo.class, "rotate");
-        rotate.setDirection(Servo.Direction.REVERSE);
         elbow1 = hardwareMap.get(ServoImplEx.class, "elbow1");
         elbow1.setDirection(Servo.Direction.REVERSE);
         elbow2 = hardwareMap.get(ServoImplEx.class, "elbow2");
@@ -343,8 +342,8 @@ public class TeleOp2024 extends LinearOpMode {
                                 if (time.seconds() > .25) {
                                     elbow1.setPosition(.99);
                                     elbow2.setPosition(.99);
-                                    wrist.setPosition(0.68);
-                                    rotate.setPosition(1);
+                                    wrist.setPosition(0.73);
+                                    rotate.setPosition(.23);
                                     subState = 0; // Reset subState for next cycle
                                     subStateDone = true;
                                 }
@@ -375,7 +374,7 @@ public class TeleOp2024 extends LinearOpMode {
                             case 1:
                                 if (time.seconds() > 1) {
 
-                                    rotate.setPosition(.34);
+                                    rotate.setPosition(.8);
 
                                     elbow1.setPosition(0.3);
                                     elbow2.setPosition(0.3);
@@ -434,7 +433,7 @@ public class TeleOp2024 extends LinearOpMode {
                                 elbow2.setPosition(0.5);
 
                                 wrist.setPosition(0.2);
-                                rotate.setPosition(0.65);
+                                rotate.setPosition(0.52);
                                 time.reset();
                                 subState = 0; // Reset subState for next cycle
                                 subStateDone = true;
@@ -517,7 +516,7 @@ public class TeleOp2024 extends LinearOpMode {
                         double[] outputs = result.getPythonOutput();
 
                         telemetry.addData("Angle", outputs[5]);
-                        rotate.setPosition((outputs[5]/180)+offset);
+                        rotate.setPosition((outputs[5]/255)+offset);
                         telemetry.addData("Valid", result.isValid());
                     }
                 }
@@ -530,7 +529,7 @@ public class TeleOp2024 extends LinearOpMode {
                     }
                 }
             }
-            if(armGamepad.touchpad){
+            if(currArmGamepad.touchpad&&!prevArmGamepad.touchpad){
                 limelightAlign = !limelightAlign;
             }
 
@@ -654,23 +653,15 @@ public class TeleOp2024 extends LinearOpMode {
             }
 
             LLStatus status = limelight.getStatus();
-            if(limelightAlign){
-                if(status.getPipelineIndex() == 0) {
-                    light.setPosition(0.28);
-                    telemetry.addData("COLOR", "RED");
-                }
-                else if(status.getPipelineIndex()==1) {
-                    light.setPosition(0.388);
-                    telemetry.addData("COLOR", "YELLOW");
-                }
-                else {
-                    light.setPosition(0.611);
-                    telemetry.addData("COLOR","BLUE");
-                }
+
+
 
             if (recovering) {
                 light.setPosition(0.5);
                 telemetry.addData("COLOR", "GREEN (Recovering)");
+            }
+            else if(!limelightAlign){
+                light.setPosition(1);
             }
             else if(status.getPipelineIndex() == 0) {
                 light.setPosition(0.28);
@@ -684,24 +675,24 @@ public class TeleOp2024 extends LinearOpMode {
                 light.setPosition(0.611);
                 telemetry.addData("COLOR","BLUE");
             }
-            else{
-                light.setPosition(1);
-            }
+
 
             telemetry.addData("Name", "%s", status.getName());
             telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d", status.getTemp(), status.getCpu(),(int)status.getFps());
             telemetry.addData("Pipeline", "Index: %d, Type: %s", status.getPipelineIndex(), status.getPipelineType());
 
-        telemetry.addData("State", robotState);
-        telemetry.addData("subState", subState);
-        telemetry.addData("time", time.seconds());
-        telemetry.addData("Is Resetting?", resetting);
-        telemetry.addData("Lift Position", lastPos);
-        telemetry.addData("Target", target);
-        telemetry.addData("rotate index", rotateIndex);
-        telemetry.addData("headingError", headingError);
-        telemetry.addData("recovering", recovering);
-        telemetry.update();
+            telemetry.addData("State", robotState);
+            telemetry.addData("subState", subState);
+            telemetry.addData("time", time.seconds());
+            telemetry.addData("Is Resetting?", resetting);
+            telemetry.addData("Lift Position", lastPos);
+            telemetry.addData("Target", target);
+            telemetry.addData("rotate index", rotateIndex);
+            telemetry.addData("headingError", headingError);
+            telemetry.addData("recovering", recovering);
+            telemetry.addData("limelight align", limelightAlign);
+            telemetry.update();
+        }
     }
-    }
+
 }
