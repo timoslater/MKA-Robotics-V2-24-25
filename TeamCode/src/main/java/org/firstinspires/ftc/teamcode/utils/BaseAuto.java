@@ -86,17 +86,17 @@ public abstract class BaseAuto extends OpMode {
 
 
         public void openClaw() {
-            grab.setPosition(0.4);
+            grab.setPosition(.95);
         }
 
         public void closeClaw() {
-            grab.setPosition(0.73);
+            grab.setPosition(0.5);
         }
 
         public void specimenGrabPosition() {
             elbow1.setPosition(.99);
             elbow2.setPosition(.99);
-            wrist.setPosition(0.72);
+            wrist.setPosition(0.73);
             rotate.setPosition(0.23);
             openClaw();
         }
@@ -114,7 +114,7 @@ public abstract class BaseAuto extends OpMode {
             rotate.setPosition(0.8);
             elbow1.setPosition(0.3);
             elbow2.setPosition(0.3);
-            wrist.setPosition(0.4);
+            wrist.setPosition(0.45);
         }
 
         public void specimentScore() {
@@ -123,8 +123,8 @@ public abstract class BaseAuto extends OpMode {
         }
 
         public void initPose() {
-            elbow1.setPosition(0.1);
-            elbow2.setPosition(0.1);
+            elbow1.setPosition(0);
+            elbow2.setPosition(0);
             wrist.setPosition(0.4);
             rotate.setPosition(0.8);
             closeClaw();

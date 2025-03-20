@@ -327,19 +327,11 @@ public class TeleOp2024 extends LinearOpMode {
                                 break;
 
 
-                            case 1:
-                                //move lift
-                                if (time.seconds() > .2) {
-                                    slideController.setTarget(-80);
-                                    time.reset();
-                                    subState++;
-                                    break;
-                                }
-                                break;
 
-                            case 2:
+
+                            case 1:
                                 //move wrist
-                                if (time.seconds() > .25) {
+                                if (time.seconds() > .2) {
                                     elbow1.setPosition(.99);
                                     elbow2.setPosition(.99);
                                     wrist.setPosition(0.73);
@@ -372,7 +364,7 @@ public class TeleOp2024 extends LinearOpMode {
                                 subState++;
                                 break;
                             case 1:
-                                if (time.seconds() > 1) {
+                                if (time.seconds() > .4) {
 
                                     rotate.setPosition(.8);
 
@@ -559,12 +551,12 @@ public class TeleOp2024 extends LinearOpMode {
 
             if (armGamepad.triangle) {
                 clawClosed = false;
-                grab.setPosition(0.4);
+                grab.setPosition(.95);
             }
 
             if (armGamepad.cross) {
                 clawClosed = true;
-                grab.setPosition(0.75);
+                grab.setPosition(0.5);
             }
 
             /*
@@ -591,7 +583,7 @@ public class TeleOp2024 extends LinearOpMode {
 
 
             if(robotState == RobotState.FLOOR_GRAB){
-                if (armGamepad.left_trigger > 0 && (slide1.getCurrentPosition() < 1800 || recovering)) {
+                if (armGamepad.left_trigger > 0 && (slide1.getCurrentPosition() < 350 || recovering)) {
                     double slidePower = armGamepad.left_trigger;
                     slide1.setPower(slidePower);
                     slide2.setPower(slidePower);
