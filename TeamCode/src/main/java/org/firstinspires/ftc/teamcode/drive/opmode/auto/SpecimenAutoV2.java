@@ -129,11 +129,14 @@ public class SpecimenAutoV2 extends BaseAuto {
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setZeroPowerAccelerationMultiplier(3)
+                .setPathEndTValueConstraint(0.9)
                 .build();
 
         line9 = follower.pathBuilder()
                 .addPath(
                         // Line 9
+
                         new BezierCurve(
                                 new Point(40.500, 72.000, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),

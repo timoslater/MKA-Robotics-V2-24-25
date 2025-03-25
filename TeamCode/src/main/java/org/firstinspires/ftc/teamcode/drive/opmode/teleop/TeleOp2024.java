@@ -80,7 +80,9 @@ public class TeleOp2024 extends LinearOpMode {
     private long stateStartTime = 0;
     ElapsedTime time = new ElapsedTime();
     public int subState = 0;
+    public int grabState = 0;
     private boolean subStateDone = false;
+    private boolean grabDone = false;
     private double headingError;
 
     private Limelight3A limelight;
@@ -296,15 +298,42 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                     }
-                    if (grabbing) {
-                        elbow1.setPosition(0.48);
-                        elbow2.setPosition(0.48);
-                        wrist.setPosition(1);
-                    } else {
+                    if (grabbing && !grabDone) {
+                        switch(grabState){
+                            case 0:
+                                elbow1.setPosition(0.48);
+                                elbow2.setPosition(0.48);
+                                wrist.setPosition(1);
+                                time.reset();
+                                grabState++;
+                                break;
+                            case 1:
+                                if(time.seconds()>0.2){
+                                    clawClosed = true;
+                                    grab.setPosition(0.5);
+                                    time.reset();
+                                    grabState++;
+                                    break;
+                                }
+                            case 2:
+                                if(time.seconds()>0.2){
+                                    elbow1.setPosition(0.6); // hover
+                                    elbow2.setPosition(0.6);
+                                    wrist.setPosition(1);
+                                    time.reset();
+                                    grabState = 0;
+                                    grabDone = true;
 
-                        elbow1.setPosition(0.6); // hover
-                        elbow2.setPosition(0.6);
-                        wrist.setPosition(1);
+                                    break;
+                                }
+
+                        }
+
+
+                    } else {
+                        clawClosed = false;
+                        grab.setPosition(.95);
+
                     }
 
                     if(!subStateDone){
@@ -576,6 +605,7 @@ public class TeleOp2024 extends LinearOpMode {
 
             if (armGamepad.left_stick_button) {
                 grabbing = true;
+                grabDone = false;
             } else if (armGamepad.right_stick_button) {
                 grabbing = false;
             }
