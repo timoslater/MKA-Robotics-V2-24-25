@@ -298,39 +298,50 @@ public class TeleOp2024 extends LinearOpMode {
 
 
                     }
-                    if (grabbing && !grabDone) {
-                        switch(grabState){
-                            case 0:
-                                elbow1.setPosition(0.48);
-                                elbow2.setPosition(0.48);
-                                wrist.setPosition(1);
-                                time.reset();
-                                grabState++;
-                                break;
-                            case 1:
-                                if(time.seconds()>0.2){
-                                    clawClosed = true;
-                                    grab.setPosition(0.5);
+                    if (grabbing) {
+                        if(!grabDone){
+                            switch(grabState){
+                                case 0:
+                                    elbow1.setPosition(0.48);
+                                    elbow2.setPosition(0.48);
+                                    wrist.setPosition(1);
                                     time.reset();
                                     grabState++;
                                     break;
-                                }
-                            case 2:
-                                if(time.seconds()>0.2){
-                                    elbow1.setPosition(0.6); // hover
-                                    elbow2.setPosition(0.6);
-                                    wrist.setPosition(1);
-                                    time.reset();
-                                    grabState = 0;
-                                    grabDone = true;
-
-                                    break;
-                                }
-
+                                case 1:
+                                    if(time.seconds()>0.2){
+                                        clawClosed = true;
+                                        grab.setPosition(0.5);
+                                        time.reset();
+                                        grabState++;
+                                        break;
+                                    }
+                                case 2:
+                                    if(time.seconds()>0.2){
+                                        elbow1.setPosition(0.6); // hover
+                                        elbow2.setPosition(0.6);
+                                        wrist.setPosition(1);
+                                        time.reset();
+                                        grabState++;
+                                        break;
+                                    }
+                                case 3:
+                                    if(time.seconds()>0.2){
+                                        slideController.setTarget(25);
+                                        time.reset();
+                                        grabState = 0;
+                                        grabDone = true;
+                                        break;
+                                    }
+                            }
                         }
 
 
+
                     } else {
+                        elbow1.setPosition(0.6); // hover
+                        elbow2.setPosition(0.6);
+                        wrist.setPosition(1);
                         clawClosed = false;
                         grab.setPosition(.95);
 
@@ -556,6 +567,7 @@ public class TeleOp2024 extends LinearOpMode {
 
             if (armGamepad.dpad_down) {
                 robotState = RobotState.FLOOR_GRAB;
+                grabbing = false;
                 subStateDone = false;
             }
 
