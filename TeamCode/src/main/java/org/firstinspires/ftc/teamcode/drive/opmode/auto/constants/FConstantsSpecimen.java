@@ -31,17 +31,17 @@ public class FConstantsSpecimen {
         FollowerConstants.secondaryTranslationalPIDFCoefficients.setCoefficients(0.075,0,0.02,0); // Not being used, @see useSecondaryTranslationalPID
 
         FollowerConstants.headingPIDFCoefficients.setCoefficients(2,0,0.03,0);
-        FollowerConstants.useSecondaryHeadingPID = true;
-        FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(1,0,0.02,0); // Not being used, @see useSecondaryHeadingPID
+        FollowerConstants.useSecondaryHeadingPID = false;
+        FollowerConstants.secondaryHeadingPIDFCoefficients.setCoefficients(1.15,0,0.05,0); // Not being used, @see useSecondaryHeadingPID
 
         FollowerConstants.drivePIDFCoefficients.setCoefficients(0.015,0,0.000005,0.6,0);
         FollowerConstants.useSecondaryDrivePID = true;
-        FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.0075,0,0.0000015,0.6,0); // Not being used, @see useSecondaryDrivePID
+        FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.01,0,0.0000035,0.6,0); // Not being used, @see useSecondaryDrivePID
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 4.5;
+        FollowerConstants.zeroPowerAccelerationMultiplier = 5;
         FollowerConstants.centripetalScaling = 0.0003;
 
-        FollowerConstants.pathEndTimeoutConstraint = 250; //1000;
+        FollowerConstants.pathEndTimeoutConstraint = 150; //1000;
         FollowerConstants.pathEndTValueConstraint = 0.995;
         FollowerConstants.pathEndVelocityConstraint = 0.1; //0.05;
         FollowerConstants.pathEndTranslationalConstraint = 0.1; //0.005;

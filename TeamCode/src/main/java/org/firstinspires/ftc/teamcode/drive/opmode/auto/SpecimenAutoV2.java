@@ -28,7 +28,7 @@ public class SpecimenAutoV2 extends BaseAuto {
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
 
-    public static double GRAB_WAIT = 0.1, LIFT_AWAY_WAIT = 0.05, SCORE_WAIT = 0.1, HUMAN_WAIT = 0; //0.3;
+    public static double GRAB_WAIT = 0.1, LIFT_AWAY_WAIT = 0.05, SCORE_WAIT = 0.135, HUMAN_WAIT = 0; //0.3;
     private int pathState;
 
     private final Pose startPose = new Pose(6.5, 54.25, Math.toRadians(0));
@@ -70,28 +70,31 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 4
                         new BezierCurve(
                                 new Point(31.250, 23.500, Point.CARTESIAN),
-                                new Point(65.000, 23.500, Point.CARTESIAN),
-                                new Point(52.000, 13.500, Point.CARTESIAN)
+                                new Point(61.000, 23.500, Point.CARTESIAN),
+                                new Point(49.000, 13.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setPathEndTValueConstraint(0.7)
                 .addPath(
                         // Line 5
                         new BezierLine(
-                                new Point(52.000, 13.500, Point.CARTESIAN),
+                                new Point(49.000, 13.500, Point.CARTESIAN),
                                 new Point(31.250, 13.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setPathEndTValueConstraint(0.995)
                 .addPath(
                         // Line 6
                         new BezierCurve(
                                 new Point(31.250, 13.500, Point.CARTESIAN),
-                                new Point(83.000, 7.250, Point.CARTESIAN),
-                                new Point(20.000, 7.500, Point.CARTESIAN)
+                                new Point(75.000, 6.250, Point.CARTESIAN),
+                                new Point(30.000, 5.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setPathEndTValueConstraint(0.5)
 //                .addPath(
 //                        // Line 6
 //                        new BezierCurve(
@@ -107,11 +110,12 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(20.000, 7.500, Point.CARTESIAN),
-                                new Point(12.750, 7.500, Point.CARTESIAN)
+                                new Point(30.000, 5.000, Point.CARTESIAN),
+                                new Point(12.750, 5.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setPathEndTValueConstraint(0.995)
                 .build();
 
 
@@ -301,6 +305,7 @@ public class SpecimenAutoV2 extends BaseAuto {
         switch (pathState) {
             case 0:
                 mechanismController.preSpecimenDrop();
+                mechanismController.moveSlideTo(50);
                 follower.followPath(line1, true);
                 setPathState(1);
                 break;
@@ -324,6 +329,7 @@ public class SpecimenAutoV2 extends BaseAuto {
 
             case 3:
                 if (!follower.isBusy() && waitTimer.isDone()) {
+                    mechanismController.moveSlideTo(0);
                     follower.followPath(line2To6, true);
                     waitTimer.startTimer(1.5);
                     setPathState(4);
@@ -387,6 +393,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 11:
                 if (waitTimer.isDone()) {
                     follower.followPath(line8, true);
+                    mechanismController.moveSlideTo(50);
                     mechanismController.preSpecimenDrop();
                     setPathState(12);
                 }
@@ -411,6 +418,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 14:
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
+                    mechanismController.moveSlideTo(0);
                     follower.followPath(line9, true);
                     setPathState(17);
                 }
@@ -449,6 +457,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 19:
                 if (waitTimer.isDone()) {
                     follower.followPath(line11, true);
+                    mechanismController.moveSlideTo(50);
                     mechanismController.preSpecimenDrop();
                     setPathState(20);
                 }
@@ -473,6 +482,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 22:
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
+                    mechanismController.moveSlideTo(0);
                     follower.followPath(line12, true);
                     setPathState(25);
                 }
@@ -513,6 +523,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 27:
                 if (waitTimer.isDone()) {
                     follower.followPath(line14, true);
+                    mechanismController.moveSlideTo(50);
                     mechanismController.preSpecimenDrop();
                     setPathState(28);
                 }
@@ -538,6 +549,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 30:
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
+                    mechanismController.moveSlideTo(0);
                     follower.followPath(line15, true);
                     setPathState(33);
                 }
@@ -576,6 +588,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 35:
                 if (waitTimer.isDone()) {
                     follower.followPath(line17, true);
+                    mechanismController.moveSlideTo(50);
                     mechanismController.preSpecimenDrop();
                     setPathState(36);
                 }
@@ -600,6 +613,7 @@ public class SpecimenAutoV2 extends BaseAuto {
             case 38:
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
+                    mechanismController.moveSlideTo(0);
                     follower.followPath(line18, true);
                     setPathState(41);
                 }
