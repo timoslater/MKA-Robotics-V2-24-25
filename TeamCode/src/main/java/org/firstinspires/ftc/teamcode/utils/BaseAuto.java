@@ -94,9 +94,9 @@ public abstract class BaseAuto extends OpMode {
         }
 
         public void specimenGrabPosition() {
-            elbow1.setPosition(.99);
-            elbow2.setPosition(.99);
-            wrist.setPosition(0.73);
+            elbow1.setPosition(1);
+            elbow2.setPosition(1);
+            wrist.setPosition(0.7);
             rotate.setPosition(0.23);
             openClaw();
         }

@@ -28,12 +28,12 @@ public class SpecimenAutoV2 extends BaseAuto {
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
 
-    public static double GRAB_WAIT = 0.1, LIFT_AWAY_WAIT = 0.05, SCORE_WAIT = 0.1, HUMAN_WAIT = 0.3;
+    public static double GRAB_WAIT = 0.1, LIFT_AWAY_WAIT = 0.05, SCORE_WAIT = 0.1, HUMAN_WAIT = 0; //0.3;
     private int pathState;
 
     private final Pose startPose = new Pose(6.5, 54.25, Math.toRadians(0));
 
-    PathChain line1, line2To6, line7, line7Extended, line8, line9, line10, line11, line12, line13, line14, line15, line16, line17, line18;
+    PathChain line1, line2To6, line7, line7Extended, line8, line9, line10, line11, line12, line13, line14, line15, line16, line17, line18, line19, line20, line21;
 
     public void buildPaths() {
         line1 = follower.pathBuilder()
@@ -41,7 +41,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 1
                         new BezierLine(
                                 new Point(6.500, 54.250, Point.CARTESIAN),
-                                new Point(39.500, 74.000, Point.CARTESIAN)
+                                new Point(40.500, 74.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -51,17 +51,17 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(40.000, 74.000, Point.CARTESIAN),
-                                new Point(15.000, 40.000, Point.CARTESIAN),
-                                new Point(48.000, 34.000, Point.CARTESIAN),
-                                new Point(59.000, 23.000, Point.CARTESIAN)
+                                new Point(40.500, 74.000, Point.CARTESIAN),
+                                new Point(8.000, 40.000, Point.CARTESIAN),
+                                new Point(60.000, 38.000, Point.CARTESIAN),
+                                new Point(57.000, 23.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 3
                         new BezierLine(
-                                new Point(59.000, 23.000, Point.CARTESIAN),
+                                new Point(57.000, 23.000, Point.CARTESIAN),
                                 new Point(31.250, 23.500, Point.CARTESIAN)
                         )
                 )
@@ -71,44 +71,44 @@ public class SpecimenAutoV2 extends BaseAuto {
                         new BezierCurve(
                                 new Point(31.250, 23.500, Point.CARTESIAN),
                                 new Point(65.000, 23.500, Point.CARTESIAN),
-                                new Point(53.000, 13.500, Point.CARTESIAN)
+                                new Point(52.000, 13.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .addPath(
                         // Line 5
                         new BezierLine(
-                                new Point(53.000, 13.000, Point.CARTESIAN),
-                                new Point(31.250, 13.000, Point.CARTESIAN)
+                                new Point(52.000, 13.500, Point.CARTESIAN),
+                                new Point(31.250, 13.500, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .addPath(
+                        // Line 6
+                        new BezierCurve(
+                                new Point(31.250, 13.500, Point.CARTESIAN),
+                                new Point(83.000, 7.250, Point.CARTESIAN),
+                                new Point(20.000, 7.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
 //                .addPath(
 //                        // Line 6
 //                        new BezierCurve(
-//                                new Point(31.250, 13.000, Point.CARTESIAN),
-//                                new Point(80.000, 13.000, Point.CARTESIAN),
-//                                new Point(53.000, 7.500, Point.CARTESIAN)
+//                                new Point(31.250, 13.500, Point.CARTESIAN),
+//                                new Point(85.000, 6.500, Point.CARTESIAN),
+//                                new Point(20.000, 7.500, Point.CARTESIAN)
 //                        )
 //                )
 //                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addPath(
-                        // Line 6
-                        new BezierCurve(
-                                new Point(31.250, 13.500, Point.CARTESIAN),
-                                new Point(88.000, 7.250, Point.CARTESIAN),
-                                new Point(20.000, 7.500, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 // IMPORTANT REMEMBER !!!
         line7 = follower.pathBuilder()
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(53.000, 7.500, Point.CARTESIAN),
-                                new Point(18.000, 7.500, Point.CARTESIAN)
+                                new Point(20.000, 7.500, Point.CARTESIAN),
+                                new Point(12.750, 7.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -118,8 +118,8 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 7
                         new BezierLine(
-                                new Point(18.000, 7.500, Point.CARTESIAN),
-                                new Point(13.250, 7.500, Point.CARTESIAN)
+                                new Point(20.000, 7.500, Point.CARTESIAN),
+                                new Point(12.750, 7.500, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -129,9 +129,9 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 8
                         new BezierCurve(
-                                new Point(13.250, 7.500, Point.CARTESIAN),
+                                new Point(12.750, 7.500, Point.CARTESIAN),
                                 new Point(18.000, 72.000, Point.CARTESIAN),
-                                new Point(39.500, 72.000, Point.CARTESIAN)
+                                new Point(40.500, 72.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -140,9 +140,11 @@ public class SpecimenAutoV2 extends BaseAuto {
         line9 = follower.pathBuilder()
                 .addPath(
                         // Line 9
-                        new BezierLine(
-                                new Point(39.500, 72.000, Point.CARTESIAN),
-                                new Point(18.000, 36.750, Point.CARTESIAN)
+                        new BezierCurve(
+                                new Point(40.500, 72.000, Point.CARTESIAN),
+                                new Point(30.000, 71.000, Point.CARTESIAN),
+                                new Point(30.000, 33.450, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -152,8 +154,8 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 10
                         new BezierLine(
-                                new Point(18.000, 36.750, Point.CARTESIAN),
-                                new Point(13.250, 36.750, Point.CARTESIAN)
+                                new Point(18.000, 38.250, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -163,10 +165,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 11
                         new BezierCurve(
-                                new Point(13.250, 36.750, Point.CARTESIAN),
-                                new Point(30.000, 36.750, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 70.000, Point.CARTESIAN),
-                                new Point(39.500, 70.000, Point.CARTESIAN)
+                                new Point(40.500, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -175,9 +177,11 @@ public class SpecimenAutoV2 extends BaseAuto {
         line12 = follower.pathBuilder()
                 .addPath(
                         // Line 12
-                        new BezierLine(
-                                new Point(39.500, 70.000, Point.CARTESIAN),
-                                new Point(18.000, 36.750, Point.CARTESIAN)
+                        new BezierCurve(
+                                new Point(40.500, 70.000, Point.CARTESIAN),
+                                new Point(30.000, 71.000, Point.CARTESIAN),
+                                new Point(30.000, 33.450, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -187,8 +191,8 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 13
                         new BezierLine(
-                                new Point(18.000, 36.750, Point.CARTESIAN),
-                                new Point(13.250, 36.750, Point.CARTESIAN)
+                                new Point(18.000, 38.250, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -198,10 +202,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 14
                         new BezierCurve(
-                                new Point(13.250, 36.750, Point.CARTESIAN),
-                                new Point(30.000, 36.750, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
-                                new Point(39.500, 68.000, Point.CARTESIAN)
+                                new Point(40.500, 68.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -210,9 +214,11 @@ public class SpecimenAutoV2 extends BaseAuto {
         line15 = follower.pathBuilder()
                 .addPath(
                         // Line 15
-                        new BezierLine(
-                                new Point(39.500, 68.000, Point.CARTESIAN),
-                                new Point(18.000, 36.750, Point.CARTESIAN)
+                        new BezierCurve(
+                                new Point(40.500, 68.000, Point.CARTESIAN),
+                                new Point(30.000, 71.000, Point.CARTESIAN),
+                                new Point(30.000, 33.450, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -222,8 +228,8 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 16
                         new BezierLine(
-                                new Point(18.000, 36.750, Point.CARTESIAN),
-                                new Point(13.250, 36.750, Point.CARTESIAN)
+                                new Point(18.000, 38.250, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -233,25 +239,68 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 17
                         new BezierCurve(
-                                new Point(13.250, 36.750, Point.CARTESIAN),
-                                new Point(30.000, 36.750, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
-                                new Point(39.500, 66.000, Point.CARTESIAN)
+                                new Point(40.500, 66.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
+//        line18 = follower.pathBuilder()
+//                .addPath(
+//                        // Line 18
+//                        new BezierCurve(
+//                                new Point(40.500, 66.000, Point.CARTESIAN),
+//                                new Point(18.500, 70.000, Point.CARTESIAN),
+//                                new Point(11.750, 24.000, Point.CARTESIAN)
+//                        )
+//                )
+//                .setConstantHeadingInterpolation(Math.toRadians(0))
+//                .build();
+
         line18 = follower.pathBuilder()
                 .addPath(
-                        // Line 18
                         new BezierCurve(
-                                new Point(39.500, 66.000, Point.CARTESIAN),
-                                new Point(18.500, 70.000, Point.CARTESIAN),
-                                new Point(11.750, 24.000, Point.CARTESIAN)
+                                new Point(40.500, 66.000, Point.CARTESIAN),
+                                new Point(30.000, 71.000, Point.CARTESIAN),
+                                new Point(30.000, 38.250, Point.CARTESIAN),
+                                new Point(12.750, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        line19 = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(16.000, 33.450, Point.CARTESIAN),
+                                new Point(12.750, 33.450, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .build();
+
+        line20 = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(12.750, 33.450, Point.CARTESIAN),
+                                new Point(30.000, 33.450, Point.CARTESIAN),
+                                new Point(18.000, 127.000, Point.CARTESIAN)
+                        )
+                )
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(315))
+                .build();
+
+        line21 = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(18.000, 127.000, Point.CARTESIAN),
+                                new Point(23.000, 122.000, Point.CARTESIAN)
+                        )
+                )
+                .setConstantHeadingInterpolation(Math.toRadians(315))
                 .build();
     }
 
@@ -281,11 +330,11 @@ public class SpecimenAutoV2 extends BaseAuto {
                     setPathState(3);
                 }
                 break;
-
+// IMPORTANT
 
             case 3:
                 if (!follower.isBusy() && waitTimer.isDone()) {
-                    follower.followPath(line2To6);
+                    follower.followPath(line2To6, true);
                     waitTimer.startTimer(1.5);
                     setPathState(4);
                 }
@@ -323,7 +372,7 @@ public class SpecimenAutoV2 extends BaseAuto {
 
             case 8:
                 if (waitTimer.isDone() && !follower.isBusy()) {
-                    follower.followPath(line7Extended, true);
+                    follower.followPath(line7, true);
                     setPathState(9);
                 }
                 break;
@@ -373,23 +422,23 @@ public class SpecimenAutoV2 extends BaseAuto {
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
                     follower.followPath(line9, true);
-                    setPathState(15);
-                }
-                break;
-
-            case 15:
-                if (!follower.isBusy()) {
-                    waitTimer.startTimer(HUMAN_WAIT);
-                    setPathState(16);
-                }
-                break;
-
-            case 16:
-                if (waitTimer.isDone()) {
-                    follower.followPath(line10, true);
                     setPathState(17);
                 }
                 break;
+
+//            case 15:
+//                if (!follower.isBusy()) {
+//                    waitTimer.startTimer(HUMAN_WAIT);
+//                    setPathState(16);
+//                }
+//                break;
+//
+//            case 16:
+//                if (waitTimer.isDone()) {
+//                    follower.followPath(line10, true);
+//                    setPathState(17);
+//                }
+//                break;
 
             case 17:
                 if (!follower.isBusy()) {
@@ -435,25 +484,25 @@ public class SpecimenAutoV2 extends BaseAuto {
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
                     follower.followPath(line12, true);
-                    setPathState(23);
-                }
-                break;
-
-            case 23:
-                if (!follower.isBusy()) {
-                    waitTimer.startTimer(HUMAN_WAIT);
-                    setPathState(24);
-                }
-                break;
-
-            case 24:
-                if (waitTimer.isDone()) {
-                    follower.followPath(line13, true);
                     setPathState(25);
                 }
                 break;
 
-                //
+//            case 23:
+//                if (!follower.isBusy()) {
+//                    waitTimer.startTimer(HUMAN_WAIT);
+//                    setPathState(24);
+//                }
+//                break;
+//
+//            case 24:
+//                if (waitTimer.isDone()) {
+//                    follower.followPath(line13, true);
+//                    setPathState(25);
+//                }
+//                break;
+
+            //
 
             case 25:
                 if (!follower.isBusy()) {
@@ -500,23 +549,23 @@ public class SpecimenAutoV2 extends BaseAuto {
                 if (waitTimer.isDone()) {
                     mechanismController.specimenGrabPosition();
                     follower.followPath(line15, true);
-                    setPathState(31);
-                }
-                break;
-
-            case 31:
-                if (!follower.isBusy()) {
-                    waitTimer.startTimer(HUMAN_WAIT);
-                    setPathState(32);
-                }
-                break;
-
-            case 32:
-                if (waitTimer.isDone()) {
-                    follower.followPath(line16, true);
                     setPathState(33);
                 }
                 break;
+
+//            case 31:
+//                if (!follower.isBusy()) {
+//                    waitTimer.startTimer(HUMAN_WAIT);
+//                    setPathState(32);
+//                }
+//                break;
+//
+//            case 32:
+//                if (waitTimer.isDone()) {
+//                    follower.followPath(line16, true);
+//                    setPathState(33);
+//                }
+//                break;
 
             case 33:
                 if (!follower.isBusy()) {
@@ -560,15 +609,93 @@ public class SpecimenAutoV2 extends BaseAuto {
 
             case 38:
                 if (waitTimer.isDone()) {
-                    mechanismController.endPosition();
+                    mechanismController.specimenGrabPosition();
                     follower.followPath(line18, true);
-                    setPathState(39);
+                    setPathState(41);
                 }
                 break;
 
+//            case 39:
+//                if (!follower.isBusy()) {
+//                    waitTimer.startTimer(HUMAN_WAIT);
+//                    setPathState(40);
+//                }
+//                break;
+//
+//            case 40:
+//                if (waitTimer.isDone()) {
+//                    follower.followPath(line19, true);
+//                    setPathState(41);
+//                }
+//                break;
+
+            case 41:
+                if (!follower.isBusy()) {
+                    mechanismController.closeClaw();
+                    waitTimer.startTimer(GRAB_WAIT);
+                    setPathState(42);
+                }
+                break;
+
+            case 42:
+                if (waitTimer.isDone()) {
+                    mechanismController.liftSpecimenAway();
+                    waitTimer.startTimer(LIFT_AWAY_WAIT);
+                    setPathState(43);
+                }
+                break;
+            case 43:
+                if (!follower.isBusy()) {
+                    mechanismController.highBasketInit();
+                    follower.followPath(line20, true);
+                    waitTimer.startTimer(1.5);
+                    setPathState(44);
+                }
+                break;
+
+            case 44:
+                if (waitTimer.isDone()) {
+                    mechanismController.moveSlideTo(850);
+                    setPathState(45);
+                }
+                break;
+
+            case 45:
+                if (!mechanismController.isBusy()) {
+                    mechanismController.highBasketDrop();
+                    waitTimer.startTimer(0.5);
+                    setPathState(46);
+                }
+                break;
+
+            case 46:
+                if (waitTimer.isDone()) {
+                    mechanismController.openClaw();
+                    waitTimer.startTimer(0.1);
+                    setPathState(47);
+                }
+                break;
+
+            case 47:
+                if (waitTimer.isDone()) {
+                    mechanismController.initPose();
+                    mechanismController.moveSlideTo(0);
+                    follower.followPath(line21, true);
+                    waitTimer.startTimer(0.5);
+                    setPathState(48);
+                }
+                break;
+
+            case 48:
+                if (waitTimer.isDone()) {
+                    mechanismController.endPosition();
+                    waitTimer.startTimer(1);
+                    setPathState(49);
+                }
+                break;
 
             default:
-                if (!follower.isBusy() && waitTimer.isDone()) {
+                if (!follower.isBusy() && waitTimer.isDone() && !mechanismController.isBusy()) {
                     requestOpModeStop();
                 }
                 break;
@@ -589,6 +716,7 @@ public class SpecimenAutoV2 extends BaseAuto {
         // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
+        mechanismController.updateControllers();
 
         // Feedback to Driver Hub
         telemetry.addData("path state", pathState);
