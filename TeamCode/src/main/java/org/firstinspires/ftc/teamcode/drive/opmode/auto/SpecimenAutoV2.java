@@ -102,7 +102,7 @@ public class SpecimenAutoV2 extends BaseAuto {
 //                )
 //                .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
-// IMPORTANT REMEMBER !!!
+
         line7 = follower.pathBuilder()
                 .addPath(
                         // Line 7
@@ -114,16 +114,6 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .build();
 
-        line7Extended = follower.pathBuilder()
-                .addPath(
-                        // Line 7
-                        new BezierLine(
-                                new Point(20.000, 7.500, Point.CARTESIAN),
-                                new Point(12.750, 7.500, Point.CARTESIAN)
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .build();
 
         line8 = follower.pathBuilder()
                 .addPath(
