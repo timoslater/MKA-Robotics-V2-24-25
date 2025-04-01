@@ -461,8 +461,8 @@ public class TeleOp2024 extends LinearOpMode {
                         switch (subState){
                             case 0:
                                 liftController.setTarget(-50);
-                                elbow1.setPosition(0.5); // sgrab
-                                elbow2.setPosition(0.5);
+                                elbow1.setPosition(0.525); // sgrab
+                                elbow2.setPosition(0.525);
 
                                 wrist.setPosition(0.2);
                                 rotate.setPosition(0.52);

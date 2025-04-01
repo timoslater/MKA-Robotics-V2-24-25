@@ -41,7 +41,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 1
                         new BezierLine(
                                 new Point(6.500, 54.250, Point.CARTESIAN),
-                                new Point(40.500, 74.000, Point.CARTESIAN)
+                                new Point(39.000, 74.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -51,8 +51,8 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 2
                         new BezierCurve(
-                                new Point(40.500, 74.000, Point.CARTESIAN),
-                                new Point(8.000, 40.000, Point.CARTESIAN),
+                                new Point(39.000, 74.000, Point.CARTESIAN),
+                                new Point(8.000, 39.000, Point.CARTESIAN),
                                 new Point(60.000, 38.000, Point.CARTESIAN),
                                 new Point(57.000, 23.000, Point.CARTESIAN)
                         )
@@ -111,11 +111,12 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 7
                         new BezierLine(
                                 new Point(30.000, 5.000, Point.CARTESIAN),
-                                new Point(12.750, 5.000, Point.CARTESIAN)
+                                new Point(12.000, 5.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
                 .setPathEndTValueConstraint(0.995)
+                .setZeroPowerAccelerationMultiplier(4.5)
                 .build();
 
 
@@ -123,9 +124,9 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 8
                         new BezierCurve(
-                                new Point(12.750, 7.500, Point.CARTESIAN),
+                                new Point(12.000, 7.500, Point.CARTESIAN),
                                 new Point(18.000, 72.000, Point.CARTESIAN),
-                                new Point(40.500, 72.000, Point.CARTESIAN)
+                                new Point(39.000, 72.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -138,10 +139,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 9
 
                         new BezierCurve(
-                                new Point(40.500, 72.000, Point.CARTESIAN),
+                                new Point(39.000, 72.000, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
                                 new Point(30.000, 33.450, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -152,7 +153,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 10
                         new BezierLine(
                                 new Point(18.000, 38.250, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -162,10 +163,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 11
                         new BezierCurve(
-                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(12.250, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 70.000, Point.CARTESIAN),
-                                new Point(40.500, 70.000, Point.CARTESIAN)
+                                new Point(39.000, 70.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -175,10 +176,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 12
                         new BezierCurve(
-                                new Point(40.500, 70.000, Point.CARTESIAN),
+                                new Point(39.000, 70.000, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
                                 new Point(30.000, 33.450, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -189,7 +190,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 13
                         new BezierLine(
                                 new Point(18.000, 38.250, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -199,10 +200,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 14
                         new BezierCurve(
-                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(12.250, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
-                                new Point(40.500, 68.000, Point.CARTESIAN)
+                                new Point(39.000, 68.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -212,10 +213,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 15
                         new BezierCurve(
-                                new Point(40.500, 68.000, Point.CARTESIAN),
+                                new Point(39.000, 68.000, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
                                 new Point(30.000, 33.450, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -226,7 +227,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                         // Line 16
                         new BezierLine(
                                 new Point(18.000, 38.250, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -236,10 +237,10 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         // Line 17
                         new BezierCurve(
-                                new Point(12.750, 38.250, Point.CARTESIAN),
+                                new Point(12.250, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 38.250, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
-                                new Point(40.500, 66.000, Point.CARTESIAN)
+                                new Point(39.000, 66.000, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -249,7 +250,7 @@ public class SpecimenAutoV2 extends BaseAuto {
 //                .addPath(
 //                        // Line 18
 //                        new BezierCurve(
-//                                new Point(40.500, 66.000, Point.CARTESIAN),
+//                                new Point(39.000, 66.000, Point.CARTESIAN),
 //                                new Point(18.500, 70.000, Point.CARTESIAN),
 //                                new Point(11.750, 24.000, Point.CARTESIAN)
 //                        )
@@ -260,10 +261,10 @@ public class SpecimenAutoV2 extends BaseAuto {
         line18 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(40.500, 66.000, Point.CARTESIAN),
+                                new Point(39.000, 66.000, Point.CARTESIAN),
                                 new Point(30.000, 71.000, Point.CARTESIAN),
                                 new Point(30.000, 38.250, Point.CARTESIAN),
-                                new Point(12.750, 38.250, Point.CARTESIAN)
+                                new Point(12.250, 38.250, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -273,7 +274,7 @@ public class SpecimenAutoV2 extends BaseAuto {
                 .addPath(
                         new BezierLine(
                                 new Point(16.000, 33.450, Point.CARTESIAN),
-                                new Point(12.750, 33.450, Point.CARTESIAN)
+                                new Point(12.250, 33.450, Point.CARTESIAN)
                         )
                 )
                 .setConstantHeadingInterpolation(Math.toRadians(0))
@@ -282,9 +283,9 @@ public class SpecimenAutoV2 extends BaseAuto {
         line20 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(12.750, 33.450, Point.CARTESIAN),
+                                new Point(12.250, 33.450, Point.CARTESIAN),
                                 new Point(30.000, 33.450, Point.CARTESIAN),
-                                new Point(18.000, 127.000, Point.CARTESIAN)
+                                new Point(18.000, 131.000, Point.CARTESIAN)
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(315))

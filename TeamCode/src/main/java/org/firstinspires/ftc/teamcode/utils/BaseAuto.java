@@ -152,8 +152,8 @@ public abstract class BaseAuto extends OpMode {
 
         public void highBasketDrop() {
             wrist.setPosition(0);
-            elbow1.setPosition(0.5);
-            elbow2.setPosition(0.5);
+            elbow1.setPosition(0.475);
+            elbow2.setPosition(0.475);
         }
 
         public void floorGrabHover() {
